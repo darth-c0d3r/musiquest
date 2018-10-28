@@ -4,6 +4,7 @@ create schema public;
 create table artist (
 	artist_id serial primary key,
 	name varchar(256) not null,
+	num_views integer default 0,
 	num_likes integer default 0,
 	num_dislikes integer default 0
 );
@@ -12,6 +13,7 @@ create table album (
 	album_id serial primary key,
 	name varchar(256) not null,
 	artist_id integer references artist,
+	num_views integer default 0,
 	num_likes integer default 0,
 	num_dislikes integer default 0	
 );

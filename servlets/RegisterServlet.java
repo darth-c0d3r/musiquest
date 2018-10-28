@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -39,8 +40,8 @@ public class RegisterServlet extends HttpServlet {
 //		else {
 //			response.getWriter().print(DbHelper.errorJson("Not logged in"));
 //		}
+//		return;
 		doPost(request, response);
-		return;
 	}
 
 	/**
@@ -49,8 +50,8 @@ public class RegisterServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
 		HttpSession session = request.getSession();
-		String userid = "p2";//request.getParameter("userid");
-		String password = "Person2";//request.getParameter("password");
+		String username = request.getParameter("username");
+		String password = request.getParameter("password");
 		
 		String swear = Config.salt_domain;
 		
@@ -81,10 +82,20 @@ public class RegisterServlet extends HttpServlet {
 			String query = "insert into users(username, password, salt) values (?, ?, ?)";
 			String json = DbHelper.executeUpdateJson(query, 
 					new DbHelper.ParamType[] {DbHelper.ParamType.STRING,DbHelper.ParamType.STRING,  DbHelper.ParamType.STRING},
-					new String[] {userid, out, salt_str});
+					new String[] {username, out, salt_str});
 			
+			if(json.contains("\"status\":true")) {
+				
+				query = "select user_id from users where username = ?";
+				
+				List<List<Object>> res = DbHelper.executeQueryList(query, 
+						new DbHelper.ParamType[] {DbHelper.ParamType.STRING}, 
+						new Object[] {username});
+				
+				session.setAttribute("username", username);
+				session.setAttribute("user_id", (Integer) res.get(0).get(0));
+			}
 			response.getWriter().print(json);
-			
 
 		} catch (NoSuchAlgorithmException e) {
 			System.out.println(e);
