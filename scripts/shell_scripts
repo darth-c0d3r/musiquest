@@ -1,8 +1,8 @@
 # for songs
-awk 'BEGIN {FS="\t";} {print $2;}' songs_hash.txt > out
+awk 'BEGIN {FS="\t";} {print $2;}' song_hash.txt > out
 cat out | sed 's/([^()]*)//g' > dataset/songs.txt
 rm out
 
-# for albums
+# for artists
 awk 'BEGIN {FS="\t";} {print $3;}' songs_hash.txt > dataset/artists.txt
 

@@ -6,13 +6,15 @@ def convert(name):
 	name = re.sub(r'[^a-z0-9 ]', '', name)
 	return name
 
-songs_file = "songs.txt"
-artists_file = "artists.txt"
-albums_file = "albums.txt"
+songs_file = "../dataset/songs.txt"
+artists_file = "../dataset/artists.txt"
+albums_file = "../dataset/albums.txt"
 
 songs = [line.rstrip('\n') for line in open(songs_file)]
 artists = [line.rstrip('\n') for line in open(artists_file)]
 
+print("%d songs\t%d artists"%(len(songs), len(artists)))
+done = 0
 with open(albums_file, "w") as file:
 	for song_, artist_ in zip(songs, artists):
 
@@ -39,4 +41,8 @@ with open(albums_file, "w") as file:
 				album = BeautifulSoup(html, 'html.parser').find('div', class_="Z0LcW").text
 				file.write(album+"\n")
 			except:
+				album = "#"
 				file.write("#\n") # most probably a single song
+
+		done += 1
+		print("%s : %s : %s : %d"%(song_,artist_,album,done))

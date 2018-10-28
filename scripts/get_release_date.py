@@ -13,7 +13,7 @@ dates_file = "release_dates.txt"
 songs = [line.rstrip('\n') for line in open(songs_file)]
 artists = [line.rstrip('\n') for line in open(artists_file)]
 
-with open(dates_file, "w") as file:
+with open(dates_file, "w+") as file:
 	for song_, artist_ in zip(songs[:5], artists[:5]):
 
 		song = convert(song_.lower()).split()
