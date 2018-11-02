@@ -87,8 +87,8 @@ public class UpdateSong extends HttpServlet {
 		String query3 = "update song set num_likes = num_likes + ?, num_dislikes = num_dislikes + ? where song_id = ?";
 		
 		String res3 = DbHelper.executeUpdateJson(query3, 
-				new DbHelper.ParamType[] {DbHelper.ParamType.INT, DbHelper.ParamType.INT}, 
-				new Object[] {likes, dislikes});
+				new DbHelper.ParamType[] {DbHelper.ParamType.INT, DbHelper.ParamType.INT, DbHelper.ParamType.INT}, 
+				new Object[] {likes, dislikes,song_id});
 		JSONObject json3 = new JSONObject();
 		
 		try {

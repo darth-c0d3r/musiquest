@@ -24,7 +24,7 @@ create table song (
 	album_id integer references album,
 	artist_id integer references artist,
 	genre varchar(20),
-	release_date numeric(5,0), 
+	release_date integer, 
 	language varchar(30),
 	lyrics_link varchar(256),
 	youtube_link varchar(256) not null,
@@ -50,13 +50,13 @@ create table admin (
 create table user_playlist (
 	playlist_id serial primary key,
 	user_id integer references users,
-	playlist_type numeric(1,0) default 0
+	playlist_type integer default 0
 );
 
 create table user_album (
 	album_id integer references song,
 	user_id integer references users,
-	relation_type numeric(1,0) default 0,
+	relation_type integer default 0,
 	num_views integer default 1,
 	primary key (user_id, album_id)
 );
@@ -64,7 +64,7 @@ create table user_album (
 create table user_artist (
 	artist_id integer references song,
 	user_id integer references users,
-	relation_type numeric(1,0) default 0,
+	relation_type integer default 0,
 	num_views integer default 1,
 	primary key (user_id, artist_id)
 );
@@ -72,7 +72,7 @@ create table user_artist (
 create table user_song (
 	song_id integer references song,
 	user_id integer references users,
-	relation_type numeric(1,0) default 0,
+	relation_type integer default 0,
 	num_views integer default 1,
 	last_viewed timestamp default current_timestamp,
 	primary key (user_id, song_id)

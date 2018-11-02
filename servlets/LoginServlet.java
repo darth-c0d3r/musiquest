@@ -32,13 +32,6 @@ public class LoginServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//		HttpSession session = request.getSession();
-//		if(session.getAttribute("id") != null) { // logged in
-//			response.getWriter().print(DbHelper.okJson().toString());
-//		}
-//		else {
-//			response.getWriter().print(DbHelper.errorJson("Not logged in"));
-//		}
 		doPost(request,response);
 		return;
 	}
@@ -49,8 +42,8 @@ public class LoginServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
 		HttpSession session = request.getSession();
-		String username =  request.getParameter("username");
-		String password =  request.getParameter("password");
+		String username = "p1" ; // request.getParameter("username");
+		String password = "Person1" ; //request.getParameter("password");
 		
 		try {
 			String type = "U";
@@ -87,10 +80,7 @@ public class LoginServlet extends HttpServlet {
 			
 			if(hash != null && hash.equals(out)) {
 				
-				if(type == "U")
-					query = "select user_id from users where username = ?";
-				else
-					query = "select user_id from admin where username = ?";
+				query = "select user_id from users where username = ?";
 				
 				res = DbHelper.executeQueryList(query, 
 						new DbHelper.ParamType[] {DbHelper.ParamType.STRING}, 
@@ -102,6 +92,7 @@ public class LoginServlet extends HttpServlet {
 				response.getWriter().print(type + DbHelper.okJson().toString());
 			}
 			else {
+				System.out.println("hell");
 				response.getWriter().print(type + DbHelper.errorJson("Username/password incorrect or not registered").toString());
 			}
 
