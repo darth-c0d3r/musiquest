@@ -3,10 +3,12 @@ import 'dart:convert';
 import 'dart:async';
 import 'session.dart';
 import 'config.dart';
+import 'song.dart';
 
 class HomePage extends StatefulWidget {
-
+  HomePage({Key key, this.uname}) : super(key: key);
   @override
+  final String uname;
   HomePageState createState() => new HomePageState();
 }
 
@@ -32,36 +34,15 @@ class HomePageState extends State<HomePage> {
   int search = 0;
   Color onTapColor3 =  Colors.white;
   Color onTapColor2 =  Colors.white;
-  Color onTapColor1 =  Colors.white;
+  Color onTapColor1 =  Colors.black;
+  Color onTapColorBox3 =  Colors.deepPurple;
+  Color onTapColorBox2 =  Colors.deepPurple;
+  Color onTapColorBox1 =  Colors.deepPurple.shade300;
 
   final config cfg = new config();
 
   Future getDataString(String url) async {
     return (await s.get(url));
-  }
-
-  @override
-  Widget bottomNames3() {
-    return new Text(
-      'Artists',
-      style: TextStyle(color: onTapColor3, fontSize: 20.0,),
-    );
-  }
-
-  @override
-  Widget bottomNames2() {
-    return new Text(
-      'Albums',
-      style: TextStyle(color: onTapColor2, fontSize: 20.0,),
-    );
-  }
-
-  @override
-  Widget bottomNames1() {
-    return new Text(
-      'Songs',
-      style: TextStyle(color: onTapColor1, fontSize: 20.0,),
-    );
   }
 
   @override
@@ -73,44 +54,88 @@ class HomePageState extends State<HomePage> {
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          new InkWell(
-            child: bottomNames3(),
-            onTap: () {
-              setState(() {
-                _data = 3;
-                onTapColor3 = Colors.black;
-                onTapColor2 = Colors.white;
-                onTapColor1 = Colors.white;
-              });
-            },
+          new Container(
+            width: 84.0,
+            height: 48.0,
+            color: onTapColorBox3,
+            child: new Center(
+              child: new InkWell(
+                child:new Text(
+                  'Artists',
+                  style: TextStyle(color: onTapColor3, fontSize: 20.0,),
+                  textAlign: TextAlign.center,
+                ),
+                onTap: () {
+                  setState(() {
+                    _data = 3;
+                    onTapColor3 = Colors.black;
+                    onTapColor2 = Colors.white;
+                    onTapColor1 = Colors.white;
+                    onTapColorBox3 = Colors.deepPurple.shade300;
+                    onTapColorBox2 = Colors.deepPurple;
+                    onTapColorBox1 = Colors.deepPurple;
+                  });
+                },
+              ),
+            ),
           ),
+
 
           SizedBox(width: 36.0,),
 
-          new InkWell(
-            child: bottomNames1(),
-            onTap: () {
-              setState(() {
-                _data = 1;
-                onTapColor1 = Colors.black;
-                onTapColor2 = Colors.white;
-                onTapColor3 = Colors.white;
-              });
-            },
+          new Container(
+            width: 84.0,
+            height: 48.0,
+            color: onTapColorBox1,
+            child: new Center(
+              child: new InkWell(
+                child: new Text(
+                  'Songs',
+                  style: TextStyle(color: onTapColor1, fontSize: 20.0,),
+                  textAlign: TextAlign.center,
+                ),
+                onTap: () {
+                  setState(() {
+                    _data = 1;
+                    onTapColor1 = Colors.black;
+                    onTapColor2 = Colors.white;
+                    onTapColor3 = Colors.white;
+                    onTapColorBox1 = Colors.deepPurple.shade300;
+                    onTapColorBox2 = Colors.deepPurple;
+                    onTapColorBox3 = Colors.deepPurple;
+                  });
+                },
+              ),
+            ),
           ),
+
 
           SizedBox(width: 36.0,),
 
-          new InkWell(
-            child: bottomNames2(),
-            onTap: () {
-              setState(() {
-                _data = 2;
-                onTapColor2 = Colors.black;
-                onTapColor3 = Colors.white;
-                onTapColor1 = Colors.white;
-              });
-            },
+          new Container(
+            width: 84.0,
+            height: 48.0,
+            color: onTapColorBox2,
+            child: new Center(
+              child: new InkWell(
+                child: new Text(
+                  'Albums',
+                  style: TextStyle(color: onTapColor2, fontSize: 20.0,),
+                  textAlign: TextAlign.center,
+                ),
+                onTap: () {
+                  setState(() {
+                    _data = 2;
+                    onTapColor2 = Colors.black;
+                    onTapColor3 = Colors.white;
+                    onTapColor1 = Colors.white;
+                    onTapColorBox2 = Colors.deepPurple.shade300;
+                    onTapColorBox3 = Colors.deepPurple;
+                    onTapColorBox1 = Colors.deepPurple;
+                  });
+                },
+              ),
+            ),
           ),
 
         ],
@@ -322,21 +347,41 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget _buildRow(dynamic d) {
-    return new Container(
-      width: 120.0,
-      padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
-      child: new Column(
-        children: <Widget>[
-          image(),
+    return GestureDetector(
+      onTap: () {
+        if(_data == 1){
+          final Song song = new Song();
+          song.uname = widget.uname;
+          song.id = '${d['song_id']}';
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SongPage(song: song,)));
+        } else if(_data == 2) {
+            final Song song = new Song();
+            song.uname = widget.uname;
+            song.id = '${d['album_id']}';
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SongPage(song: song,)));
+        } else if(_data == 3) {
+            final Song song = new Song();
+            song.uname = widget.uname;
+            song.id = '${d['artist_id']}';
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SongPage(song: song,)));
+        }
+      },
 
-          new Text(
-            '${d['name']}',
-            textAlign: TextAlign.center,
-            style: TextStyle( color: Colors.white),
-            softWrap: true,
-           // overflow: TextOverflow.ellipsis,
-          ),
-        ],
+      child: new Container(
+        width: 120.0,
+        padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
+        child: new Column(
+          children: <Widget>[
+            image(),
+
+            new Text(
+              '${d['name']}',
+              textAlign: TextAlign.center,
+              style: TextStyle( color: Colors.white),
+            // overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -451,146 +496,149 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      key: _ScaffoldKey,
-      appBar: buildAppbar(),
+    return new WillPopScope(
+      onWillPop: () async => false,
+      child: new Scaffold(
+        key: _ScaffoldKey,
+        appBar: buildAppbar(),
 
-      body: new Stack(
-        children : <Widget>[
-          new Container(
-            decoration: new BoxDecoration(
-              image: new DecorationImage(
-                image: new AssetImage('icon/bg.png'),
-                fit: BoxFit.cover,
+        body: new Stack(
+          children : <Widget>[
+            new Container(
+              decoration: new BoxDecoration(
+                image: new DecorationImage(
+                  image: new AssetImage('icon/bg.png'),
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-          ),
-          new Column(
-            //mainAxisSize: MainAxisSize.max,
+            new Column(
+              //mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                SizedBox(height: 16.0,),
+                new Expanded(
+                    child: new Container(
+                      child: buildType(), //_buildList(song_views),
+                    )
+                ),
+                buildBottombar(), // Bottom bar build
+              ],
+            ),
+          ],
+        ),
+
+        drawer: new Drawer(
+          elevation: 25.0,
+          child: new ListView(
             children: <Widget>[
-              SizedBox(height: 16.0,),
-              new Expanded(
-                  child: new Container(
-                    child: buildType(), //_buildList(song_views),
-                  )
+              new ListTile(
+                title: new CircleAvatar(
+                  backgroundColor: Colors.purple,
+                  child: new IconButton(
+                    icon: Icon(
+                      Icons.person,
+                      color: Colors.white,
+                    ),
+                    iconSize: 64.0,
+                    onPressed: null,
+                  ),
+                  radius: 64.0,
+                ),
               ),
-              buildBottombar(), // Bottom bar build
+
+              new ListTile(
+                title: new Text(
+                  widget.uname,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 24.0,),
+                  softWrap: true,
+                ),
+              ),
+
+              new Divider(
+                height: 16.0,
+                color: Colors.black,
+              ),
+
+              new ListTile(
+                title: new Text(
+                  'My PlayLists',
+                  textAlign: TextAlign.left,
+                ),
+                onTap: (){
+                  Navigator.pop(context);
+                },
+                leading: Icon(
+                  Icons.library_music,
+                  color: Colors.purple,
+                ),
+              ),
+
+              new Divider(
+                height: 8.0,
+                color: Colors.black12,
+              ),
+
+              new ListTile(
+                title: new Text(
+                  'Change Password',
+                  textAlign: TextAlign.left,
+                ),
+                onTap: (){
+                  Navigator.pop(context);
+                },
+                leading: Icon(
+                  Icons.build,
+                  color: Colors.purple,
+                ),
+              ),
+
+              new Divider(
+                height: 8.0,
+                color: Colors.black12,
+              ),
+
+              new ListTile(
+                title: new Text(
+                  'Delete Account',
+                  textAlign: TextAlign.left,
+                ),
+                onTap: (){
+                  Navigator.pop(context);
+                },
+                leading: Icon(
+                  Icons.delete_forever,
+                  color: Colors.purple,
+                ),
+              ),
+
+              new Divider(
+                height: 8.0,
+                color: Colors.black12,
+              ),
+
+              new ListTile(
+                title: new Text(
+                  'Logout',
+                  textAlign: TextAlign.left,
+                ),
+                onTap: (){
+                  var data = getDataString(cfg.logout);
+                  data.then((ret) {
+                    Navigator.popUntil(
+                      context,
+                      ModalRoute.withName('/'),
+                    );
+                  });
+                },
+                leading: Icon(
+                  Icons.exit_to_app, //Icons.power_settings_new,
+                  color: Colors.purple,
+                ),
+              ),
+
             ],
           ),
-        ],
-      ),
-
-      drawer: new Drawer(
-        elevation: 25.0,
-        child: new ListView(
-          children: <Widget>[
-            new ListTile(
-              title: new CircleAvatar(
-                backgroundColor: Colors.purple,
-                child: new IconButton(
-                  icon: Icon(
-                    Icons.person,
-                    color: Colors.white,
-                  ),
-                  iconSize: 64.0,
-                  onPressed: null,
-                ),
-                radius: 64.0,
-              ),
-            ),
-
-            new ListTile(
-              title: new Text(
-                'User Name',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 24.0,),
-                softWrap: true,
-              ),
-            ),
-
-            new Divider(
-              height: 16.0,
-              color: Colors.black,
-            ),
-
-            new ListTile(
-              title: new Text(
-                'My PlayLists',
-                textAlign: TextAlign.center,
-              ),
-              onTap: (){
-                Navigator.pop(context);
-              },
-              leading: Icon(
-                Icons.library_music,
-                color: Colors.purple,
-              ),
-            ),
-
-            new Divider(
-              height: 8.0,
-              color: Colors.black12,
-            ),
-
-            new ListTile(
-              title: new Text(
-                'Change Password',
-                textAlign: TextAlign.center,
-              ),
-              onTap: (){
-                Navigator.pop(context);
-              },
-              leading: Icon(
-                Icons.build,
-                color: Colors.purple,
-              ),
-            ),
-
-            new Divider(
-              height: 8.0,
-              color: Colors.black12,
-            ),
-
-            new ListTile(
-              title: new Text(
-                'Delete Account',
-                textAlign: TextAlign.center,
-              ),
-              onTap: (){
-                Navigator.pop(context);
-              },
-              leading: Icon(
-                Icons.delete_forever,
-                color: Colors.purple,
-              ),
-            ),
-
-            new Divider(
-              height: 8.0,
-              color: Colors.black12,
-            ),
-
-            new ListTile(
-              title: new Text(
-                'Logout',
-                textAlign: TextAlign.center,
-              ),
-              onTap: (){
-                var data = getDataString(cfg.logout);
-                data.then((ret) {
-                  Navigator.popUntil(
-                    context,
-                    ModalRoute.withName('/'),
-                  );
-                });
-              },
-              leading: Icon(
-                Icons.exit_to_app, //Icons.power_settings_new,
-                color: Colors.purple,
-              ),
-            ),
-
-          ],
         ),
       ),
     );

@@ -147,7 +147,7 @@ class RegisterPageState extends State<RegisterPage> {
                                         } else {
                                           Navigator.push(
                                             context,
-                                            MaterialPageRoute(builder: (context) => HomePage()),
+                                            MaterialPageRoute(builder: (context) => HomePage(uname: uname.text,)),
                                           );
                                         }
                                       }).catchError((onError) =>

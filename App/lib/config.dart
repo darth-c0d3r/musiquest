@@ -12,4 +12,6 @@ class config {
   final newMsg      = 'http://' + ip + ':' + port + '/' + project + '/NewMessage';
   final createConv  = 'http://' + ip + ':' + port + '/' + project + '/CreateConversation';
   final autoComp    = 'http://' + ip + ':' + port + '/' + project + '/AutoCompleteUser';
+  final song        = 'http://' + ip + ':' + port + '/' + project + '/SongInfo';
+  final updateSong  = 'http://' + ip + ':' + port + '/' + project + '/UpdateSong';
 }
