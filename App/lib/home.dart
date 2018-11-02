@@ -26,7 +26,7 @@ class HomePageState extends State<HomePage> {
   dynamic recently_played = <dynamic>[];
 
   String loading = "Loading...";
-  int _data = 1;
+  int _data = 0;
   int _filter = 0;
   int search = 0;
   final config cfg = new config();
@@ -312,76 +312,60 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget _buildList(dynamic each_row) {
-    return  ListView.builder(
-      padding: const EdgeInsets.all(16.0),
-      scrollDirection: Axis.horizontal,
-      itemBuilder: (context, i) {
-        return _buildRow(each_row[i]);
-      },
-      itemCount: each_row.length,
+    if (_data > 0){
+      return  ListView.builder(
+        padding: const EdgeInsets.all(16.0),
+        scrollDirection: Axis.horizontal,
+        itemBuilder: (context, i) {
+          return _buildRow(each_row[i]);
+        },
+        itemCount: each_row.length,
+      );
+    } else {
+      return new Text(
+        loading,
+        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        textAlign: TextAlign.center,
+      );
+    }
+
+  }
+
+  @override
+  Widget image(){
+    String text = '';
+    if(_data == 1)
+      text = 'icon/song.png';
+    else if(_data == 2)
+      text = 'icon/album.png';
+    else if(_data == 3)
+      text = 'icon/artist.png';
+
+    return new Image.asset(
+      text,
+      height: 96.0,
     );
   }
 
   @override
   Widget _buildRow(dynamic d) {
-    if(_data == 1) {
-      return new Container(
-        width: 100.0,
-        padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
-        child: new Column(
-          children: <Widget>[
-            new Image.asset(
-              'icon/song.png',
-              height: 96.0,
-            ),
-            new Text(
-              '${d['name']}',
-              textAlign: TextAlign.center,
-              style: TextStyle( color: Colors.white),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
-      );
-    } else if(_data == 2) {
-      return new Container(
-        width: 100.0,
-        padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
-        child: new Column(
-          children: <Widget>[
-            new Image.asset(
-              'icon/album.png',
-              height: 96.0,
-            ),
-            new Text(
-              '${d['name']}',
-              textAlign: TextAlign.center,
-              style: TextStyle( color: Colors.white),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
-      );
-    } else {
-      return new Container(
-        width: 100.0,
-        padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
-        child: new Column(
-          children: <Widget>[
-            new Image.asset(
-              'icon/artist.png',
-              height: 96.0,
-            ),
-            new Text(
-              '${d['name']}',
-              textAlign: TextAlign.center,
-              style: TextStyle( color: Colors.white),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
-      );
-    }
+    return new Container(
+      width: 120.0,
+      padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
+      child: new Column(
+        children: <Widget>[
+          image(),
+
+          new Text(
+            '${d['name']}',
+            textAlign: TextAlign.center,
+            style: TextStyle( color: Colors.white),
+            softWrap: true,
+           // overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
   }
 
   void fillList() {
@@ -479,6 +463,9 @@ class HomePageState extends State<HomePage> {
           loading = '${det['recently_played']['message']}';
         });
       }
+      setState(() {
+        _data = 1;
+      });
     });
   }
 
@@ -509,9 +496,9 @@ class HomePageState extends State<HomePage> {
             children: <Widget>[
               SizedBox(height: 16.0,),
               new Expanded(
-                child: new Container(
-                  child: buildType(), //_buildList(song_views),
-                 )
+                  child: new Container(
+                    child: buildType(), //_buildList(song_views),
+                  )
               ),
               buildBottombar(), // Bottom bar build
             ],
