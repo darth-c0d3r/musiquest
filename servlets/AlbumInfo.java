@@ -1,6 +1,5 @@
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -46,22 +45,49 @@ public class AlbumInfo extends HttpServlet {
 		}
 		
 		int album_id = Integer.parseInt(request.getParameter("album_id"));
-		String query1 = "select * from album where album_id = ?;";
-				
-		String res1 = DbHelper.executeQueryJson(query1, 
-				new DbHelper.ParamType[] {DbHelper.ParamType.INT}, 
-				new Object[] {album_id});
-				
+		int user_id = (Integer) session.getAttribute("user_id");
 		JSONParser parser = new JSONParser();
-		JSONObject json1 = new JSONObject();
 		
+		String query1 = "update user_album set num_views = num_views+1 where album_id = ? and user_id = ?";
+		String res1 = DbHelper.executeUpdateJson(query1, 
+				new DbHelper.ParamType[] {DbHelper.ParamType.INT, DbHelper.ParamType.INT},
+				new Object[] {album_id, user_id});
+		JSONObject json1 = new JSONObject();
 		try {
 			json1 = (JSONObject) parser.parse(res1);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 		
-		response.getWriter().print(json1.toString());
+		if(json1.get("status").equals(false)) {
+			String query2 = "insert into user_album(album_id,user_id) values (?, ?)";
+			DbHelper.executeUpdateJson(query2, 
+					new DbHelper.ParamType[] {DbHelper.ParamType.INT, DbHelper.ParamType.INT},
+					new Object[] {album_id, user_id});
+			
+			query2 = "update album set num_views = num_views + 1 where album_id = ?";
+			DbHelper.executeUpdateJson(query2, 
+					new DbHelper.ParamType[] {DbHelper.ParamType.INT},
+					new Object[] {album_id});
+			
+		}
+		
+		String query3 = "with album_entry as (select * from album where album_id = ?) "
+				+ "select album_entry.*, user_album.relation_type, artist.name as artist_name "
+				+ "from album_entry, user_album, artist where user_id = ? and album_entry.album_id = user_album.album_id "
+				+ "and album_entry.artist_id = artist.artist_id";
+		String res3 = DbHelper.executeQueryJson(query3, 
+				new DbHelper.ParamType[] {DbHelper.ParamType.INT, DbHelper.ParamType.INT}, 
+				new Object[] {album_id, user_id});
+		JSONObject json3 = new JSONObject();
+		
+		try {
+			json3 = (JSONObject) parser.parse(res3);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		response.getWriter().print(json3.toString());
 	}
 
 	/**

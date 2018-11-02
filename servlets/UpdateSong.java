@@ -1,6 +1,5 @@
 
 import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -8,21 +7,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import java.util.List;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 /**
- * Servlet implementation class ArtistInfo
+ * Servlet implementation class UpdateSong
  */
-@WebServlet("/ArtistInfo")
-public class ArtistInfo extends HttpServlet {
+@WebServlet("/UpdateSong")
+public class UpdateSong extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public ArtistInfo() {
+    public UpdateSong() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -31,26 +31,28 @@ public class ArtistInfo extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	HttpSession session = request.getSession();
+		HttpSession session = request.getSession();
 		
 		if(session.getAttribute("user_id") == null) { //not logged in
 			response.getWriter().print(DbHelper.errorJson("Not logged in").toString());
 			return;
 		}
 		
-		if(request.getParameter("artist_id") == null) {
+		if(request.getParameter("song_id") == null || request.getParameter("value") == null) {
 			response.getWriter().print("Incorrect Parameters Provided");
 			return;
 		}
-		
-		int artist_id = Integer.parseInt(request.getParameter("artist_id"));
+				
+		int song_id = Integer.parseInt(request.getParameter("song_id"));
 		int user_id = (Integer) session.getAttribute("user_id");
+		int value = Integer.parseInt(request.getParameter("value"));
 		JSONParser parser = new JSONParser();
 		
-		String query1 = "update user_artist set num_views = num_views+1 where artist_id = ? and user_id = ?";
+		String query1 = "update user_song set relation_type = relation_type + ? "
+				+ "where song_id = ? and user_id = ?";
 		String res1 = DbHelper.executeUpdateJson(query1, 
-				new DbHelper.ParamType[] {DbHelper.ParamType.INT, DbHelper.ParamType.INT},
-				new Object[] {artist_id, user_id});
+				new DbHelper.ParamType[] {DbHelper.ParamType.INT, DbHelper.ParamType.INT, DbHelper.ParamType.INT},
+				new Object[] {value, song_id, user_id});
 		JSONObject json1 = new JSONObject();
 		try {
 			json1 = (JSONObject) parser.parse(res1);
@@ -59,24 +61,34 @@ public class ArtistInfo extends HttpServlet {
 		}
 		
 		if(json1.get("status").equals(false)) {
-			String query2 = "insert into user_artist(artist_id,user_id) values (?, ?)";
-			DbHelper.executeUpdateJson(query2, 
-					new DbHelper.ParamType[] {DbHelper.ParamType.INT, DbHelper.ParamType.INT},
-					new Object[] {artist_id, user_id});
-			
-			query2 = "update artist set num_views = num_views + 1 where artist_id = ?";
-			DbHelper.executeUpdateJson(query2, 
-					new DbHelper.ParamType[] {DbHelper.ParamType.INT},
-					new Object[] {artist_id});
-			
+			response.getWriter().print(DbHelper.errorJson("Song entry does not exist").toString());			
 		}
 		
-		String query3 = "with artist_entry as (select * from artist where artist_id = ?) "
-				+ "select artist_entry.*, user_artist.relation_type "
-				+ "from artist_entry join user_artist on artist_entry.artist_id = user_artist.artist_id where user_id = ?";		
-		String res3 = DbHelper.executeQueryJson(query3, 
+		String query2 = "select relation_type from user_song where song_id = ? and user_id = ?";		
+		List<List<Object>> res2 = DbHelper.executeQueryList(query2, 
+				new DbHelper.ParamType[] {DbHelper.ParamType.INT, DbHelper.ParamType.INT},
+				new Object[] {song_id, user_id});
+		
+		int likes=0,dislikes=0;
+		int relation_type = (Integer)res2.get(0).get(0);
+		if(value>0) {
+			if(relation_type == 1)
+				++likes;
+			if(relation_type-value == -1)
+				--dislikes;
+		}
+		else {
+			if(relation_type == -1)
+				++dislikes;
+			if(relation_type-value == 1)
+				--likes;
+		}
+		
+		String query3 = "update song set num_likes = num_likes + ?, num_dislikes = num_dislikes + ? where song_id = ?";
+		
+		String res3 = DbHelper.executeUpdateJson(query3, 
 				new DbHelper.ParamType[] {DbHelper.ParamType.INT, DbHelper.ParamType.INT}, 
-				new Object[] {artist_id, user_id});
+				new Object[] {likes, dislikes});
 		JSONObject json3 = new JSONObject();
 		
 		try {

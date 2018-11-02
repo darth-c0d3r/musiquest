@@ -6,7 +6,6 @@ insert into users(username, password, salt) values ('p4', '150d97cb6076cbc6ca58a
 insert into admin(username, password, salt) values ('a1', 'f4bfe8f391c1a033967d1aadb5545d1daa5f7f41c20a71a542e3b0fe814696d4', '8qebBQo3a');
 insert into admin(username, password, salt) values ('abhro', '49b198aca8028ec86359bc6df8cfc3decfaf8c678a7fcb573054feb572e1a14d', 'aj8Sf^Y8l');
 
-
 insert into artist(name) values ('2Pac');
 insert into artist(name) values ('2 Pistols');
 insert into artist(name) values ('50 Cent');

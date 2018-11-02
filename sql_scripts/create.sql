@@ -57,23 +57,23 @@ create table user_album (
 	album_id integer references song,
 	user_id integer references users,
 	relation_type numeric(1,0) default 0,
-	num_views integer default 0,
-	primary key (album_id, song_id)
+	num_views integer default 1,
+	primary key (user_id, album_id)
 );
 
 create table user_artist (
 	artist_id integer references song,
 	user_id integer references users,
 	relation_type numeric(1,0) default 0,
-	num_views integer default 0,
-	primary key (artist_id, song_id)
+	num_views integer default 1,
+	primary key (user_id, artist_id)
 );
 
 create table user_song (
 	song_id integer references song,
 	user_id integer references users,
 	relation_type numeric(1,0) default 0,
-	num_views integer default 0,
+	num_views integer default 1,
 	last_viewed timestamp default current_timestamp,
 	primary key (user_id, song_id)
 );
