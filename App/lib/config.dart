@@ -1,6 +1,6 @@
 
 class config {
-  static final ip = '192.168.0.109';
+  static final ip = '10.196.8.197';
   static final port = '8080';
   static final project = 'musi_quest_1';
 

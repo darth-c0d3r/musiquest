@@ -13,6 +13,8 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
 
   final Session s = new Session();
+  final GlobalKey<ScaffoldState> _ScaffoldKey = new GlobalKey<ScaffoldState>();
+
   dynamic song_views = <dynamic>[];
   dynamic song_likes = <dynamic>[];
   dynamic song_date = <dynamic>[];
@@ -27,14 +29,40 @@ class HomePageState extends State<HomePage> {
 
   String loading = "Loading...";
   int _data = 0;
-  int _filter = 0;
   int search = 0;
+  Color onTapColor3 =  Colors.white;
+  Color onTapColor2 =  Colors.white;
+  Color onTapColor1 =  Colors.white;
+
   final config cfg = new config();
 
   Future getDataString(String url) async {
     return (await s.get(url));
   }
 
+  @override
+  Widget bottomNames3() {
+    return new Text(
+      'Artists',
+      style: TextStyle(color: onTapColor3, fontSize: 20.0,),
+    );
+  }
+
+  @override
+  Widget bottomNames2() {
+    return new Text(
+      'Albums',
+      style: TextStyle(color: onTapColor2, fontSize: 20.0,),
+    );
+  }
+
+  @override
+  Widget bottomNames1() {
+    return new Text(
+      'Songs',
+      style: TextStyle(color: onTapColor1, fontSize: 20.0,),
+    );
+  }
 
   @override
   Widget buildBottombar() {
@@ -45,81 +73,46 @@ class HomePageState extends State<HomePage> {
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          IconButton(
-            icon: Icon(
-                Icons.music_note
-            ),
-            onPressed: () {
-              setState(() {
-                _data = 1;
-              });
-            },
-            color: Colors.white,
-          ),
-
-          IconButton(
-            icon: Icon(
-                Icons.album
-            ),
-            onPressed: () {
-              setState(() {
-                _data = 2;
-              });
-            },
-            color: Colors.white,
-          ),
-
-          IconButton(
-            icon: Icon(
-                Icons.person
-            ),
-            onPressed: () {
+          new InkWell(
+            child: bottomNames3(),
+            onTap: () {
               setState(() {
                 _data = 3;
+                onTapColor3 = Colors.black;
+                onTapColor2 = Colors.white;
+                onTapColor1 = Colors.white;
               });
             },
-            color: Colors.white,
           ),
 
-          IconButton(
-            icon: Icon(
-                Icons.search
-            ),
-            onPressed: () {
+          SizedBox(width: 36.0,),
+
+          new InkWell(
+            child: bottomNames1(),
+            onTap: () {
               setState(() {
-                search++;
+                _data = 1;
+                onTapColor1 = Colors.black;
+                onTapColor2 = Colors.white;
+                onTapColor3 = Colors.white;
               });
             },
-            color: Colors.white,
           ),
 
-          IconButton(
-            icon: Icon(
-                Icons.library_music
-            ),
-            onPressed: () {
+          SizedBox(width: 36.0,),
+
+          new InkWell(
+            child: bottomNames2(),
+            onTap: () {
               setState(() {
-                search++;
+                _data = 2;
+                onTapColor2 = Colors.black;
+                onTapColor3 = Colors.white;
+                onTapColor1 = Colors.white;
               });
             },
-            color: Colors.white,
           ),
 
-          IconButton(
-            icon: Icon(
-                Icons.exit_to_app
-            ),
-            onPressed: () {
-              var data = getDataString(cfg.logout);
-              data.then((ret) {
-                Navigator.popUntil(
-                  context,
-                  ModalRoute.withName('/'),
-                );
-              });
-            },
-            color: Colors.white,
-          ),
         ],
       ),
     );
@@ -127,54 +120,43 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget buildAppbar() {
-    if(search <= 0){
-      return new AppBar(
-        title: const Text(
-          'MusiQuest Home',
-        ),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-      );
-    } else {
-      return new AppBar(
-        title: new Directionality(
-          textDirection: Directionality.of(context),
-          child: new TextField(
-            cursorWidth: 1.0,
-            cursorColor: Colors.white,
-            keyboardType: TextInputType.text,
-            decoration: InputDecoration(
-                hintText: 'Search'
-            ),
-            //onChanged: (query)=> changeList(query),
+    return new AppBar(
+      title: const Text(
+        'MusiQuest Home',
+      ),
+      centerTitle: true,
+      automaticallyImplyLeading: false,
+      leading: new IconButton(
+          icon: new Icon(Icons.menu),
+          onPressed: () => _ScaffoldKey.currentState.openDrawer()
+      ),
+      actions: <Widget>[
+        IconButton(
+          icon: Icon(
+            Icons.search,
+            //size: 32.0,
           ),
-        ),
-        actions: <Widget>[
-          new IconButton(
-              icon: Icon(Icons.search),
-              onPressed: () {
-
-              }
-          ),
-        ],
-        leading: new IconButton(
-          icon: Icon(Icons.arrow_back),
           onPressed: () {
             setState(() {
-              _filter = 0;
-            });
-            setState(() {
-              search = 0;
+              search++;
             });
           },
+          color: Colors.white,
         ),
-      );
-    }
+      ],
+    );
   }
 
   @override
   Widget buildType() {
-    if(_data == 1) {
+    if (_data == 0) {
+      return new Text(
+        loading,
+        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        textAlign: TextAlign.center,
+      );
+    }
+    else if(_data == 1) {
       return ListView(
         scrollDirection: Axis.vertical,
         children: <Widget>[
@@ -312,23 +294,14 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget _buildList(dynamic each_row) {
-    if (_data > 0){
-      return  ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        scrollDirection: Axis.horizontal,
-        itemBuilder: (context, i) {
-          return _buildRow(each_row[i]);
-        },
-        itemCount: each_row.length,
-      );
-    } else {
-      return new Text(
-        loading,
-        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        textAlign: TextAlign.center,
-      );
-    }
-
+    return  ListView.builder(
+      padding: const EdgeInsets.all(16.0),
+      scrollDirection: Axis.horizontal,
+      itemBuilder: (context, i) {
+        return _buildRow(each_row[i]);
+      },
+      itemCount: each_row.length,
+    );
   }
 
   @override
@@ -479,6 +452,7 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+      key: _ScaffoldKey,
       appBar: buildAppbar(),
 
       body: new Stack(
@@ -504,6 +478,120 @@ class HomePageState extends State<HomePage> {
             ],
           ),
         ],
+      ),
+
+      drawer: new Drawer(
+        elevation: 25.0,
+        child: new ListView(
+          children: <Widget>[
+            new ListTile(
+              title: new CircleAvatar(
+                backgroundColor: Colors.purple,
+                child: new IconButton(
+                  icon: Icon(
+                    Icons.person,
+                    color: Colors.white,
+                  ),
+                  iconSize: 64.0,
+                  onPressed: null,
+                ),
+                radius: 64.0,
+              ),
+            ),
+
+            new ListTile(
+              title: new Text(
+                'User Name',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 24.0,),
+                softWrap: true,
+              ),
+            ),
+
+            new Divider(
+              height: 16.0,
+              color: Colors.black,
+            ),
+
+            new ListTile(
+              title: new Text(
+                'My PlayLists',
+                textAlign: TextAlign.center,
+              ),
+              onTap: (){
+                Navigator.pop(context);
+              },
+              leading: Icon(
+                Icons.library_music,
+                color: Colors.purple,
+              ),
+            ),
+
+            new Divider(
+              height: 8.0,
+              color: Colors.black12,
+            ),
+
+            new ListTile(
+              title: new Text(
+                'Change Password',
+                textAlign: TextAlign.center,
+              ),
+              onTap: (){
+                Navigator.pop(context);
+              },
+              leading: Icon(
+                Icons.build,
+                color: Colors.purple,
+              ),
+            ),
+
+            new Divider(
+              height: 8.0,
+              color: Colors.black12,
+            ),
+
+            new ListTile(
+              title: new Text(
+                'Delete Account',
+                textAlign: TextAlign.center,
+              ),
+              onTap: (){
+                Navigator.pop(context);
+              },
+              leading: Icon(
+                Icons.delete_forever,
+                color: Colors.purple,
+              ),
+            ),
+
+            new Divider(
+              height: 8.0,
+              color: Colors.black12,
+            ),
+
+            new ListTile(
+              title: new Text(
+                'Logout',
+                textAlign: TextAlign.center,
+              ),
+              onTap: (){
+                var data = getDataString(cfg.logout);
+                data.then((ret) {
+                  Navigator.popUntil(
+                    context,
+                    ModalRoute.withName('/'),
+                  );
+                });
+              },
+              leading: Icon(
+                Icons.exit_to_app, //Icons.power_settings_new,
+                color: Colors.purple,
+              ),
+            ),
+
+          ],
+        ),
       ),
     );
   }
