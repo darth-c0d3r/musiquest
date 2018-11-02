@@ -1,0 +1,6 @@
+- normalize the schema [remove redundancy in num_views etc.] ?
+
+
+
+
+- user_song views (multiple) and song num_views (once) are updated differently even for the same user.

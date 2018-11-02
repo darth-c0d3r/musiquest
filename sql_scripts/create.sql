@@ -53,6 +53,22 @@ create table user_playlist (
 	playlist_type numeric(1,0) default 0
 );
 
+create table user_album (
+	album_id integer references song,
+	user_id integer references users,
+	relation_type numeric(1,0) default 0,
+	num_views integer default 0,
+	primary key (album_id, song_id)
+);
+
+create table user_artist (
+	artist_id integer references song,
+	user_id integer references users,
+	relation_type numeric(1,0) default 0,
+	num_views integer default 0,
+	primary key (artist_id, song_id)
+);
+
 create table user_song (
 	song_id integer references song,
 	user_id integer references users,
