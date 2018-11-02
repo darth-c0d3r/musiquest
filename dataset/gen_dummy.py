@@ -3,11 +3,13 @@ import string
 
 total = 75262
 
-albums = [alpha for alpha in string.ascii_lowercase]
+link_prefix = 'https://www.cse.iitb.ac.in/~rathi/audios/audio'
+
+albums = ["Album " + str(alpha) for alpha in string.ascii_uppercase]
 release_dates = [n for n in range(1990,2020)]
 genres = ['rock', 'classic', 'blues', 'rap', 'electric']
 lyrics_links = ['a1', 'a2', 'a3', 'a4', 'a5']
-youtube_links = ['b1', 'b2', 'b3', 'b4', 'b5']
+youtube_links = [link_prefix+str(i+1)+'.mp3' for i in range(7)]
 languages = ['english', 'hindi', 'punjabi', 'japanese']
 
 artists_file = open('artists2.txt', 'r')
