@@ -116,6 +116,12 @@ public class Homepage extends HttpServlet {
 		ret.put("artist_views" , json6);
 		ret.put("artist_likes" , json7);
 		ret.put("recently_played", json8);
+
+//try {
+//	Thread.sleep(500);
+//} catch (InterruptedException e) {
+//	e.printStackTrace();
+//}
 		response.getWriter().print(ret.toString());
 		
 	}
