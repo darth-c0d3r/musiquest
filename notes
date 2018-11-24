@@ -4,3 +4,5 @@
 
 
 - user_song views (multiple) and song num_views (once) are updated differently even for the same user.
+
+https://stackoverflow.com/questions/6120657/how-to-generate-a-unique-hash-code-for-string-input-in-android
