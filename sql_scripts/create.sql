@@ -50,6 +50,7 @@ create table admin (
 create table user_playlist (
 	playlist_id serial primary key,
 	user_id integer references users,
+	name varchar(256) not null,
 	playlist_type integer default 0
 );
 

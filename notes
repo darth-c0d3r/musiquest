@@ -1,8 +1,22 @@
 - normalize the schema [remove redundancy in num_views etc.] ?
 
-
-
-
 - user_song views (multiple) and song num_views (once) are updated differently even for the same user.
 
 https://stackoverflow.com/questions/6120657/how-to-generate-a-unique-hash-code-for-string-input-in-android
+
+*Clarifications:
+
+	- The user_playlist relation is essentially unique for each playlist, stores the user who created the playlist (and hence can make updates). Hence should contain all playlist related data.
+	- The song_playlist is a relation denoting which song belongs to which playlist 
+
+
+*Functionality Specifications:
+
+	- Artist page will only display metadata, and list of ALL albums (infinite scroll view)
+	- New songs can be added to playlist only through 'Add to playlist' option in song
+
+	- Difference between temporary and permanent playlist?? None in terms of back-end
+
+*Future Scope:
+	
+	- Autoplay songs	 

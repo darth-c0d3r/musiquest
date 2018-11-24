@@ -30,7 +30,8 @@ public class ArtistInfo extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @SuppressWarnings("unchecked")
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	HttpSession session = request.getSession();
 		
 		if(session.getAttribute("user_id") == null) { //not logged in
@@ -77,15 +78,27 @@ public class ArtistInfo extends HttpServlet {
 		String res3 = DbHelper.executeQueryJson(query3, 
 				new DbHelper.ParamType[] {DbHelper.ParamType.INT, DbHelper.ParamType.INT}, 
 				new Object[] {artist_id, user_id});
+		
+		String query4 = "select album.album_id, album.name from album where artist_id = ?";
+		String res4 = DbHelper.executeQueryJson(query4, 
+				new DbHelper.ParamType[] {DbHelper.ParamType.INT}, 
+				new Object[] {artist_id});
+		
 		JSONObject json3 = new JSONObject();
+		JSONObject json4 = new JSONObject();
 		
 		try {
 			json3 = (JSONObject) parser.parse(res3);
+			json4 = (JSONObject) parser.parse(res4);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 		
-		response.getWriter().print(json3.toString());
+		JSONObject ret = new JSONObject();
+		ret.put("metadata", json3);
+		ret.put("albums", json4);
+		
+		response.getWriter().print(ret.toString());
 	}
 
 	/**
