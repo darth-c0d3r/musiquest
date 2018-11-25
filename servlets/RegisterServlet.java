@@ -33,14 +33,6 @@ public class RegisterServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//		HttpSession session = request.getSession();
-//		if(session.getAttribute("id") != null) { // logged in
-//			response.getWriter().print(DbHelper.okJson().toString());
-//		}
-//		else {
-//			response.getWriter().print(DbHelper.errorJson("Not logged in"));
-//		}
-//		return;
 		doPost(request, response);
 	}
 
@@ -92,8 +84,19 @@ public class RegisterServlet extends HttpServlet {
 						new DbHelper.ParamType[] {DbHelper.ParamType.STRING}, 
 						new Object[] {username});
 				
+				int user_id = (Integer) res.get(0).get(0);
 				session.setAttribute("username", username);
-				session.setAttribute("user_id", (Integer) res.get(0).get(0));
+				session.setAttribute("user_id", user_id);
+				
+				query = "insert into user_playlist(user_id, name, playlist_type) values (?,'My Queue',1)";
+				DbHelper.executeUpdateJson(query, 
+					new DbHelper.ParamType[] {DbHelper.ParamType.INT},
+					new Object[] {user_id});
+				
+				query = "insert into user_playlist(user_id, name, playlist_type) values (?,'Made For You',2)";
+				DbHelper.executeUpdateJson(query, 
+					new DbHelper.ParamType[] {DbHelper.ParamType.INT},
+					new Object[] {user_id});
 			}
 			response.getWriter().print(json);
 

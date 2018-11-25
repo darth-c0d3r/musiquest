@@ -13,16 +13,16 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 /**
- * Servlet implementation class RemovePlaylist
+ * Servlet implementation class DeleteAccount
  */
-@WebServlet("/RemovePlaylist")
-public class RemovePlaylist extends HttpServlet {
+@WebServlet("/DeleteAccount")
+public class DeleteAccount extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public RemovePlaylist() {
+    public DeleteAccount() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -30,49 +30,31 @@ public class RemovePlaylist extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	@SuppressWarnings("unused")
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
-		
 		if(session.getAttribute("user_id") == null) { //not logged in
 			response.getWriter().print(DbHelper.errorJson("Not logged in").toString());
 			return;
 		}
 		
-		if(request.getParameter("playlist_id") == null) {
-			response.getWriter().print("Incorrect Parameters Provided");
-			return;
-		}
-				
-		int playlist_id = Integer.parseInt(request.getParameter("playlist_id"));
 		int user_id = (Integer) session.getAttribute("user_id");
 		JSONParser parser = new JSONParser();
-		
 		JSONObject json1 = new JSONObject();
 			
-		String query1 = "delete from song_playlist where playlist_id = ? and exists (select * from user_playlist where"
-				+ " user_id = ? and playlist_id = ? and playlist_type = 0)";
+		String query1 = "delete from users where user_id = ?";
 		String res1 = DbHelper.executeUpdateJson(query1, 
-				new DbHelper.ParamType[] {DbHelper.ParamType.INT, DbHelper.ParamType.INT, DbHelper.ParamType.INT},
-				new Object[] {playlist_id, user_id, playlist_id});		
+				new DbHelper.ParamType[] {DbHelper.ParamType.INT},
+				new Object[] {user_id});		
 		try {
 			json1 = (JSONObject) parser.parse(res1);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 		
-		String query2 = "delete from user_playlist where user_id = ? and playlist_id = ? and playlist_type = 0";
-		String res2 = DbHelper.executeUpdateJson(query2, 
-				new DbHelper.ParamType[] {DbHelper.ParamType.INT, DbHelper.ParamType.INT},
-				new Object[] {user_id, playlist_id});		
-		try {
-			json1 = (JSONObject) parser.parse(res2);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		
-		response.getWriter().print(json1.toString());
+		session.invalidate();
+		response.getWriter().println(DbHelper.okJson().toString());
 	}
-
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)

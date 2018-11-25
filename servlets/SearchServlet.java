@@ -45,9 +45,7 @@ public class SearchServlet extends HttpServlet {
 				
 		String search_key = request.getParameter("search_key").toString();
 		JSONParser parser = new JSONParser();
-		
-		// create extension pg_tgrm;
-
+		// create extension pg_trgm;
 
 		String query1 = "select song_id, name from song order by word_similarity(name, ?) desc limit 5";
 		String res1 = DbHelper.executeQueryJson(query1, 

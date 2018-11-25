@@ -55,8 +55,10 @@ public class Homepage extends HttpServlet {
 				+ "artist.artist_id, artist.name order by total_views desc limit 10;";
 		String query7 = "select artist_id, name from artist order by num_likes desc limit 10;";
 		
-		String query8 = " select song.song_id, song.name from user_song join song on song.song_id = user_song.song_id"
+		String query8 = "select song.song_id, song.name from user_song join song on song.song_id = user_song.song_id"
 				+ " where user_id = ? order by last_viewed desc limit 10;";
+		
+		String query9 = "select playlist_id from user_playlist where user_id = ? and playlist_type = 1";
 		
 		String res1 = DbHelper.executeQueryJson(query1, 
 				new DbHelper.ParamType[] {}, new String[] {});
@@ -83,6 +85,10 @@ public class Homepage extends HttpServlet {
 				new DbHelper.ParamType[] {DbHelper.ParamType.INT}, 
 				new Object[] {user_id});
 		
+		String res9 = DbHelper.executeQueryJson(query9, 
+				new DbHelper.ParamType[] {DbHelper.ParamType.INT}, 
+				new Object[] {user_id});
+		
 		JSONParser parser = new JSONParser();
 		JSONObject json1 = new JSONObject();
 		JSONObject json2 = new JSONObject();
@@ -92,7 +98,7 @@ public class Homepage extends HttpServlet {
 		JSONObject json6 = new JSONObject();
 		JSONObject json7 = new JSONObject();
 		JSONObject json8 = new JSONObject();
-		
+		JSONObject json9 = new JSONObject();
 
 		try {
 			json1 = (JSONObject) parser.parse(res1);
@@ -103,6 +109,7 @@ public class Homepage extends HttpServlet {
 			json6 = (JSONObject) parser.parse(res6);
 			json7 = (JSONObject) parser.parse(res7);
 			json8 = (JSONObject) parser.parse(res8);
+			json9 = (JSONObject) parser.parse(res9);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
@@ -116,7 +123,7 @@ public class Homepage extends HttpServlet {
 		ret.put("artist_views" , json6);
 		ret.put("artist_likes" , json7);
 		ret.put("recently_played", json8);
-
+		ret.put("queue_id", json9);	
 //try {
 //	Thread.sleep(500);
 //} catch (InterruptedException e) {

@@ -48,9 +48,9 @@ public class AllPlaylists extends HttpServlet {
 		
 		String query1 = "";
 		if(type == 0)
-			query1 = "select playlist_id, name from user_playlist where user_id = ?";
+			query1 = "select playlist_id, name, playlist_type from user_playlist where user_id = ? and playlist_type <> 1";
 		else
-			query1 = "select playlist_id, name from user_playlist where user_id = ? and playlist_type = 0";
+			query1 = "select playlist_id, name, playlist_type from user_playlist where user_id = ?";
 		String res1 = DbHelper.executeQueryJson(query1, 
 				new DbHelper.ParamType[] {DbHelper.ParamType.INT}, new Object[] {user_id});
 		

@@ -8,6 +8,7 @@ https://stackoverflow.com/questions/6120657/how-to-generate-a-unique-hash-code-f
 
 	- The user_playlist relation is essentially unique for each playlist, stores the user who created the playlist (and hence can make updates). Hence should contain all playlist related data.
 	- The song_playlist is a relation denoting which song belongs to which playlist. 
+	- Need to be careful about SearchServlet. Irregular behaviour??
 
 *Functionality Specifications:
 
@@ -24,6 +25,12 @@ https://stackoverflow.com/questions/6120657/how-to-generate-a-unique-hash-code-f
 
 	- What to do for songs with no album name?
 
+	- Think about what to display for null search_key
+
+	- Identify that something has been clicked
+
+	- Admin side: Web interface, upload songs etc
+ 
 *Future Scope:
 	
 	- Autoplay songs	 

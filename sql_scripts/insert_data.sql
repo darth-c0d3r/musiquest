@@ -3,6 +3,11 @@ insert into users(username, password, salt) values ('p2', 'f452c8951b3bf0be4eeb4
 insert into users(username, password, salt) values ('p3', '61aff20a487fc7ba2ac33d53d2aed30eb6ad99d342846cb2c38ba40f180431ed', 's`Z*tk~3r');
 insert into users(username, password, salt) values ('p4', '150d97cb6076cbc6ca58ad74b5bd7d9aaf2593a24000035e6aae923912564713', 'PmOjv4l[y');
 
+insert into user_playlist(user_id, name, playlist_type) values (1,'My Queue',1);
+insert into user_playlist(user_id, name, playlist_type) values (2,'My Queue',1);
+insert into user_playlist(user_id, name, playlist_type) values (4,'My Queue',1);
+
+
 insert into admin(username, password, salt) values('a1','f4bfe8f391c1a033967d1aadb5545d1daa5f7f41c20a71a542e3b0fe814696d4','8qebBQo3a');
 insert into admin(username, password, salt) values('abhro','49b198aca8028ec86359bc6df8cfc3decfaf8c678a7fcb573054feb572e1a14d','aj8Sf^Y8l');
 
@@ -1291,4 +1296,4 @@ insert into song_playlist(song_id, playlist_id) values (12,4);
 insert into song_playlist(song_id, playlist_id) values (17,4);
 insert into song_playlist(song_id, playlist_id) values (54,6);
 insert into song_playlist(song_id, playlist_id) values (37,7);
-	
+
