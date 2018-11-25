@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'session.dart';
 import 'config.dart';
+import 'home.dart';
+import 'song.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -10,8 +12,10 @@ enum PlayerState { stopped, playing, paused }
 class PlayerWidget extends StatefulWidget {
   final String url;
   var id;
+  final Ids song;
+  final bool mute;
 
-  PlayerWidget({@required this.url, this.id});
+  PlayerWidget({@required this.url, this.id, this.song, this.mute});
 
   @override
   State<StatefulWidget> createState() {
@@ -47,7 +51,10 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   @override
   void initState() {
     super.initState();
+
     _initAudioPlayer();
+
+    _play();
   }
 
   @override
@@ -65,6 +72,12 @@ class _PlayerWidgetState extends State<PlayerWidget> {
 
   @override
   Widget build(BuildContext context) {
+
+    if(widget.mute) {
+      _audioPlayer.setVolume(0.0);
+    } else {
+      _audioPlayer.setVolume(1.0);
+    }
     return new Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
@@ -98,14 +111,47 @@ class _PlayerWidgetState extends State<PlayerWidget> {
               icon: new Icon(Icons.thumb_up
             ),
                 color: up_color),
+
+            new IconButton(
+              icon: Icon(Icons.skip_previous),
+              iconSize: 24.0,
+              color: Colors.white,
+              onPressed: (){
+                final Ids prev_song = widget.song;
+                if(widget.song.idx >= 0){
+                  prev_song.idx = (widget.song.idx + widget.song.lists.length - 1)%widget.song.lists.length;
+                  prev_song.id = '${widget.song.lists[prev_song.idx]['song_id']}';
+                }
+                Navigator.pushReplacement(
+                    context, MaterialPageRoute(builder: (context) => SongPage(song: prev_song,)));
+              },
+            ),
             new IconButton(
                 onPressed: _isPlaying ? () => _pause() : () => _play(),
                 icon: playPause(),
+                iconSize: 24.0,
                 color: Colors.cyan),
             new IconButton(
                 onPressed: _isPlaying || _isPaused ? () => _stop() : null,
                 icon: new Icon(Icons.stop),
+                iconSize: 24.0,
                 color: Colors.cyan),
+
+            new IconButton(
+              icon: Icon(Icons.skip_next),
+              iconSize: 24.0,
+              color: Colors.white,
+              onPressed: (){
+                final Ids prev_song = widget.song;
+                if(widget.song.idx >= 0){
+                  prev_song.idx = (widget.song.idx + 1)%widget.song.lists.length;
+                  prev_song.id = '${widget.song.lists[prev_song.idx]['song_id']}';
+                }
+                Navigator.pushReplacement(
+                    context, MaterialPageRoute(builder: (context) => SongPage(song: prev_song,)));
+              },
+            ),
+
             new IconButton(
               onPressed: (){
                 setState(() {
@@ -183,7 +229,17 @@ class _PlayerWidgetState extends State<PlayerWidget> {
       setState(() {
         _position = _duration;
       });
+      final Ids prev_song = widget.song;
+      if(widget.song.idx >= 0){
+        prev_song.idx = (widget.song.idx + 1)%widget.song.lists.length;
+        prev_song.id = '${widget.song.lists[prev_song.idx]['song_id']}';
+      }
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => SongPage(song: prev_song,)));
+
     };
+
+
 
     _audioPlayer.errorHandler = (msg) {
       print('audioPlayer error : $msg');
@@ -220,5 +276,6 @@ class _PlayerWidgetState extends State<PlayerWidget> {
 
   void _onComplete() {
     setState(() => _playerState = PlayerState.stopped);
+
   }
 }

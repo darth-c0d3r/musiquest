@@ -1,42 +1,37 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
-import 'dart:async';
 import 'session.dart';
 import 'config.dart';
-import 'home.dart';
 import 'song.dart';
+import 'home.dart';
 
-class PlayListInfoPage extends StatefulWidget {
-  PlayListInfoPage({Key key, this.playlist}) : super(key: key);
+class QueuePage extends StatefulWidget {
+  QueuePage({Key key, this.uname, this.queue_id}) : super(key: key);
 
-  final Ids playlist;
-  PlayListInfoPageState createState() => new PlayListInfoPageState();
+  final String uname;
+  final String queue_id;
+  QueuePageState createState() => new QueuePageState();
 }
 
-class PlayListInfoPageState extends State<PlayListInfoPage> {
+class QueuePageState extends State<QueuePage> {
 
   final Session s = new Session();
 
-  String status = 'Loading...';
-  final config cfg = new config();
+  String loading = "Loading...";
   dynamic songs_data = <dynamic>[];
   bool _data = false;
-
-
-  Future getDataString(String url) async {
-    return (await s.get(url));
-  }
+  final config cfg = new config();
 
   Widget buildAppbar() {
     return new AppBar(
       bottomOpacity: 0.0,
-      title: Text(widget.playlist.lists['name'], style: TextStyle(color: Colors.white),textAlign: TextAlign.center,),
+      title: Text('My Queue', style: TextStyle(color: Colors.white),textAlign: TextAlign.center,),
       centerTitle: true,
       automaticallyImplyLeading: false,
       leading: new IconButton(
         icon: Icon(Icons.arrow_back),
         onPressed: () {
-            Navigator.pop(context);
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(uname: widget.uname)));
         },
       ),
     );
@@ -57,58 +52,58 @@ class PlayListInfoPageState extends State<PlayListInfoPage> {
 
   Widget _buildRow(dynamic d, int idx, dynamic lists) {
     return new ListTile(
-        leading: new GestureDetector(
-          child: new Image.asset(
-            'icon/song.png',
-            height: 32.0,
-          ),
-          onTap: (){
-            final Ids song = new Ids();
-            if(_data){
-              song.uname = widget.playlist.uname;
-              song.id = '${d['song_id']}';
-              song.idx = idx;
-              song.lists = lists;
-              Navigator.push(context, MaterialPageRoute(builder: (context) => SongPage(song: song,)));
-            }
-          },
+      leading: new GestureDetector(
+        child: new Image.asset(
+          'icon/song.png',
+          height: 32.0,
         ),
-        title: new InkWell(
-          child: new Text(
-            _data ? '${d['name']}' : '',
-            textAlign: TextAlign.left,
-            style: TextStyle( color: Colors.white),
-          ),
-          onTap: () {
-            final Ids song = new Ids();
-            if(_data){
-              song.uname = widget.playlist.uname;
-              song.id = '${d['song_id']}';
-              song.idx = idx;
-              song.lists = lists;
-              Navigator.push(context, MaterialPageRoute(builder: (context) => SongPage(song: song,)));
-            }
-          },
+        onTap: (){
+          final Ids song = new Ids();
+          if(_data){
+            song.uname = widget.uname;
+            song.id = '${d['song_id']}';
+            song.idx = idx;
+            song.lists = lists;
+            Navigator.push(context, MaterialPageRoute(builder: (context) => SongPage(song: song,)));
+          }
+        },
+      ),
+      title: new InkWell(
+        child: new Text(
+          _data ? '${d['name']}' : '',
+          textAlign: TextAlign.left,
+          style: TextStyle( color: Colors.white),
         ),
-        trailing: new IconButton(
+        onTap: () {
+          final Ids song = new Ids();
+          if(_data){
+            song.uname = widget.uname;
+            song.id = '${d['song_id']}';
+            song.idx = idx;
+            song.lists = lists;
+            Navigator.push(context, MaterialPageRoute(builder: (context) => SongPage(song: song,)));
+          }
+        },
+      ),
+      trailing: new IconButton(
           icon: Icon(Icons.delete, color: Colors.white, size: 24.0,),
           onPressed: (){
             dynamic data = {
               'song_id': '${d['song_id']}',
-              'playlist_id' : widget.playlist.id
+              'playlist_id' : widget.queue_id
             };
             s.post(cfg.rmvfrompl, data).then((ret){
               Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => PlayListInfoPage(playlist: widget.playlist,)));
+                  context, MaterialPageRoute(builder: (context) => QueuePage(uname: widget.uname,queue_id: widget.queue_id,)));
             });
           }
-        ),
+      ),
     );
   }
 
   void getDetails() {
     dynamic data = {
-      'playlist_id': widget.playlist.id,
+      'playlist_id': widget.queue_id,
     };
 
     s.post(cfg.playlist, data).then((ret){
@@ -121,7 +116,7 @@ class PlayListInfoPageState extends State<PlayListInfoPage> {
         }
       } else {
         setState(() {
-          status = '${det['message']}';
+          loading = '${det['message']}';
         });
       }
       setState(() {

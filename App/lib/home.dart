@@ -7,6 +7,8 @@ import 'song.dart';
 import 'album.dart';
 import 'artist.dart';
 import 'PlayLists.dart';
+import 'search.dart';
+import 'queue.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.uname}) : super(key: key);
@@ -31,6 +33,7 @@ class HomePageState extends State<HomePage> {
   dynamic artist_views = <dynamic>[];
 
   dynamic recently_played = <dynamic>[];
+  var queue ;
 
   String loading = "Loading...";
   int _data = 0;
@@ -46,6 +49,40 @@ class HomePageState extends State<HomePage> {
 
   Future getDataString(String url) async {
     return (await s.get(url));
+  }
+
+  Future<void> AddToQueue(BuildContext context, var songId) async {
+    return showDialog<void>(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Add to Queue?'),
+            content: null,
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Add!'),
+                onPressed: () {
+                  dynamic data = {
+                    'song_id': songId,
+                    'playlist_id': queue
+                  };
+                  s.post(cfg.UpdtList, data).then((ret){
+                    print(ret);
+                    Navigator.pop(context);
+                  });
+                },
+              ),
+              FlatButton(
+                child: Text('Cancel'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        }
+    );
   }
 
   Widget buildBottombar() {
@@ -163,9 +200,7 @@ class HomePageState extends State<HomePage> {
             //size: 32.0,
           ),
           onPressed: () {
-            setState(() {
-              search++;
-            });
+            Navigator.push(context, MaterialPageRoute(builder: (context) => SearchPage(uname: widget.uname, queue_id: queue)));
           },
           color: Colors.white,
         ),
@@ -173,7 +208,7 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  Widget buildType() {
+  Widget buildType(BuildContext context) {
     if (_data == 0) {
       return new Text(
         loading,
@@ -194,7 +229,7 @@ class HomePageState extends State<HomePage> {
               ),
               new Container(
                 height: 180.0,
-                child: _buildList(recently_played),
+                child: _buildList(recently_played, context),
               ),
             ],
           ),
@@ -210,7 +245,7 @@ class HomePageState extends State<HomePage> {
               ),
               new Container(
                 height: 180.0,
-                child: _buildList(song_date),
+                child: _buildList(song_date, context),
               ),
             ],
           ),
@@ -224,7 +259,7 @@ class HomePageState extends State<HomePage> {
               ),
               new Container(
                 height: 180.0,
-                child: _buildList(song_views),
+                child: _buildList(song_views, context),
               ),
             ],
           ),
@@ -239,7 +274,7 @@ class HomePageState extends State<HomePage> {
               ),
               new Container(
                 height: 180.0,
-                child: _buildList(song_likes),
+                child: _buildList(song_likes, context),
               ),
             ],
           ),
@@ -260,7 +295,7 @@ class HomePageState extends State<HomePage> {
               ),
               new Container(
                 height: 180.0,
-                child: _buildList(album_views),
+                child: _buildList(album_views, context),
               ),
             ],
           ),
@@ -274,7 +309,7 @@ class HomePageState extends State<HomePage> {
               ),
               new Container(
                 height: 180.0,
-                child: _buildList(album_likes),
+                child: _buildList(album_likes, context),
               ),
             ],
           ),
@@ -294,7 +329,7 @@ class HomePageState extends State<HomePage> {
               ),
               new Container(
                 height: 180.0,
-                child: _buildList(artist_views),
+                child: _buildList(artist_views, context),
               ),
             ],
           ),
@@ -308,7 +343,7 @@ class HomePageState extends State<HomePage> {
               ),
               new Container(
                 height: 180.0,
-                child: _buildList(artist_likes),
+                child: _buildList(artist_likes, context),
               ),
             ],
           ),
@@ -317,12 +352,12 @@ class HomePageState extends State<HomePage> {
     }
   }
 
-  Widget _buildList(dynamic each_row) {
+  Widget _buildList(dynamic each_row, BuildContext context) {
     return  ListView.builder(
       padding: const EdgeInsets.all(16.0),
       scrollDirection: Axis.horizontal,
       itemBuilder: (context, i) {
-        return _buildRow(each_row[i]);
+        return _buildRow(each_row[i], context);
       },
       itemCount: each_row.length,
     );
@@ -343,7 +378,7 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildRow(dynamic d) {
+  Widget _buildRow(dynamic d, BuildContext context) {
     return GestureDetector(
       onTap: () {
         final Ids song = new Ids();
@@ -366,6 +401,11 @@ class HomePageState extends State<HomePage> {
             song.uname = widget.uname;
             song.id = '${d['artist_id']}';
             Navigator.push(context, MaterialPageRoute(builder: (context) => ArtistPage(artist: song,)));
+        }
+      },
+      onLongPress: () {
+        if(_data == 1) {
+          AddToQueue(context, '${d['song_id']}');
         }
       },
 
@@ -483,6 +523,9 @@ class HomePageState extends State<HomePage> {
           loading = '${det['recently_played']['message']}';
         });
       }
+      for ( var row in det['queue_id']['data']){
+        queue = row['playlist_id'].toString();
+      }
       setState(() {
         _data = 1;
       });
@@ -520,7 +563,7 @@ class HomePageState extends State<HomePage> {
                 SizedBox(height: 16.0,),
                 new Expanded(
                     child: new Container(
-                      child: buildType(), //_buildList(song_views),
+                      child: buildType(context), //_buildList(song_views),
                     )
                 ),
                 buildBottombar(), // Bottom bar build
@@ -574,6 +617,27 @@ class HomePageState extends State<HomePage> {
                 },
                 leading: Icon(
                   Icons.library_music,
+                  color: Colors.purple,
+                ),
+              ),
+
+              new Divider(
+                height: 8.0,
+                color: Colors.black12,
+              ),
+
+              new ListTile(
+                title: new Text(
+                  'My Queue',
+                  textAlign: TextAlign.left,
+                ),
+                onTap: (){
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => QueuePage(uname: widget.uname, queue_id: queue)));
+                },
+                leading: Icon(
+                  Icons.queue_music,
                   color: Colors.purple,
                 ),
               ),

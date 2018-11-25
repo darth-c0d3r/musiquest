@@ -119,10 +119,34 @@ class PlaylistsPageState extends State<PlaylistsPage> {
 
   Widget _buildRow(dynamic d,BuildContext context) {
     return new ListTile(
-      leading: new Icon(
-        Icons.playlist_add_check,
+      leading: new IconButton(
+        icon: Icon(Icons.playlist_add_check),
         color: Colors.white,
-        size: 24.0,
+        iconSize: 24.0,
+        onPressed: () {
+          if(widget.type == 0){
+            final Ids song = new Ids();
+            if(_data){
+              song.uname = widget.uname;
+              song.id = '${d['playlist_id']}';
+              song.idx = null;
+              song.lists = d;
+              Navigator.push(context, MaterialPageRoute(builder: (context) => PlayListInfoPage(playlist: song,)));
+            }
+          } else {
+            dynamic data = {
+              'song_id': widget.song_id,
+              'playlist_id': '${d['playlist_id']}'
+            };
+            s.post(cfg.UpdtList, data).then((ret){
+              Scaffold.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Successfully Added to playlist!'),
+                ),
+              );
+            });
+          }
+        },
       ),
       title: new InkWell(
         child: new Text(
@@ -168,6 +192,8 @@ class PlaylistsPageState extends State<PlaylistsPage> {
             dynamic data = {
               'playlist_id' : id
             };
+
+
 
             s.post(cfg.rmvpl, data).then((ret){
               Navigator.pushReplacement(
@@ -232,6 +258,7 @@ class PlaylistsPageState extends State<PlaylistsPage> {
                     child: buildList(context),
                   )
               ),
+
             ],
           ),
         ],

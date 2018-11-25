@@ -1,8 +1,8 @@
 
 class config {
-  static final ip = '10.42.0.246';
+  static final ip = '10.42.0.1';
   static final port = '8080';
-  static final project = 'musi_quest_1';
+  static final project = 'DBProject';
 
   final login       = 'http://' + ip + ':' + port + '/' + project + '/LoginServlet';
   final register    = 'http://' + ip + ':' + port + '/' + project + '/RegisterServlet';
@@ -24,4 +24,5 @@ class config {
   final crtpl       = 'http://' + ip + ':' + port + '/' + project + '/CreatePlaylist';
   final rmvpl       = 'http://' + ip + ':' + port + '/' + project + '/RemovePlaylist';
   final rmvfrompl   = 'http://' + ip + ':' + port + '/' + project + '/RemoveFromPlaylist';
+  final search      = 'http://' + ip + ':' + port + '/' + project + '/SearchServlet';
 }

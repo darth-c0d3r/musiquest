@@ -24,6 +24,7 @@ class SongPageState extends State<SongPage> {
   final config cfg = new config();
   dynamic song_data = <dynamic>[];
   int _data = 0;
+  bool mute = false;
 
   Future getDataString(String url) async {
     return (await s.get(url));
@@ -62,6 +63,14 @@ class SongPageState extends State<SongPage> {
         },
       ),
       actions: <Widget>[
+        IconButton(
+          icon: mute ? Icon(Icons.volume_off) : Icon(Icons.volume_up),
+          onPressed: (){
+            setState(() {
+              mute =  !mute;
+            });
+          },
+        ),
         IconButton(
           icon: Icon(
             Icons.playlist_add,
@@ -112,11 +121,11 @@ class SongPageState extends State<SongPage> {
     getDetails();
   }
 
-  Widget playSong() {
+  Widget playSong(Ids song) {
     if(_data <= 0) {
       return Text(status);
     } else {
-      return PlayerWidget(url: link, id: widget.song.id,);
+      return PlayerWidget(url: link, id: widget.song.id, song: song, mute: mute,);
     }
   }
 
@@ -171,46 +180,10 @@ class SongPageState extends State<SongPage> {
                           new Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
-                              new InkWell(
-                                child: new Text(
-                                  'Prev',
-                                  style: TextStyle(color: Colors.white, fontSize: 16.0),
-                                ),
-                                onTap: () {
-                                  final Ids prev_song = widget.song;
-                                  if(widget.song.idx >= 0){
-                                    prev_song.idx = (widget.song.idx + widget.song.lists.length - 1)%widget.song.lists.length;
-                                    prev_song.id = '${widget.song.lists[prev_song.idx]['song_id']}';
-                                  }
-                                  Navigator.pushReplacement(
-                                    context, MaterialPageRoute(builder: (context) => SongPage(song: prev_song,)));
-                                },
-                              ),
-
-                              SizedBox(width: 32.0,),
-
                               dataValues(
                                   'num_views',' Views',
                                   TextStyle(color: Colors.white, fontSize: 16.0),
                                   TextAlign.center
-                              ),
-
-                              SizedBox(width: 32.0,),
-
-                              new InkWell(
-                                child: new Text(
-                                  'Next',
-                                  style: TextStyle(color: Colors.white, fontSize: 16.0),
-                                ),
-                                onTap: () {
-                                  final Ids prev_song = widget.song;
-                                  if(widget.song.idx >= 0){
-                                    prev_song.idx = (widget.song.idx + 1)%widget.song.lists.length;
-                                    prev_song.id = '${widget.song.lists[prev_song.idx]['song_id']}';
-                                  }
-                                  Navigator.pushReplacement(
-                                    context, MaterialPageRoute(builder: (context) => SongPage(song: prev_song,)));
-                                },
                               ),
                             ],
                           ),
@@ -221,7 +194,7 @@ class SongPageState extends State<SongPage> {
                 ),
               ),
 
-              playSong(),
+              playSong(widget.song),
             ],
           ),
         ],
