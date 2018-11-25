@@ -13,16 +13,16 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 /**
- * Servlet implementation class AllPlaylists
+ * Servlet implementation class PlaylistInfo
  */
-@WebServlet("/AllPlaylists")
-public class AllPlaylists extends HttpServlet {
+@WebServlet("/PlaylistInfo")
+public class PlaylistInfo extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public AllPlaylists() {
+    public PlaylistInfo() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -38,30 +38,25 @@ public class AllPlaylists extends HttpServlet {
 			return;
 		}
 		
-		if(request.getParameter("type") == null ) {
+		if(request.getParameter("playlist_id") == null) {
 			response.getWriter().print("Incorrect Parameters Provided");
 			return;
 		}
-		
-		int user_id = (Integer) session.getAttribute("user_id");
-		int type = Integer.parseInt(request.getParameter("type"));
-		
-		String query1 = "";
-		if(type == 0)
-			query1 = "select playlist_id, name from user_playlist where user_id = ?";
-		else
-			query1 = "select playlist_id, name from user_playlist where user_id = ? and playlist_type = 0";
-		String res1 = DbHelper.executeQueryJson(query1, 
-				new DbHelper.ParamType[] {DbHelper.ParamType.INT}, new Object[] {user_id});
-		
+				
+		int playlist_id = Integer.parseInt(request.getParameter("playlist_id"));
+//		int user_id = (Integer) session.getAttribute("user_id");
 		JSONParser parser = new JSONParser();
+		
+		String query1 = "with all_songs as (select song_id from song_playlist where playlist_id = ?) select song.song_id, song.name from all_songs natural join song";
+		String res1 = DbHelper.executeQueryJson(query1, 
+				new DbHelper.ParamType[] {DbHelper.ParamType.INT},
+				new Object[] {playlist_id});
 		JSONObject json1 = new JSONObject();
-
 		try {
 			json1 = (JSONObject) parser.parse(res1);
 		} catch (ParseException e) {
 			e.printStackTrace();
-		}
+		}		
 		
 		response.getWriter().print(json1.toString());
 	}

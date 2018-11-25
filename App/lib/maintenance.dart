@@ -8,7 +8,6 @@ class MaintenancePage extends StatefulWidget {
 
 class MaintenancePageState extends State<MaintenancePage> {
 
-  @override
   Widget buildAppbar() {
     return new AppBar(
       title: const Text('Maintenance'),
@@ -16,10 +15,9 @@ class MaintenancePageState extends State<MaintenancePage> {
     );
   }
 
-  @override
   Widget _buildRow() {
     return new  Text(
-      'Go to Hell',
+      'Admin Page',
     );
   }
 

@@ -13,16 +13,16 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 /**
- * Servlet implementation class AllPlaylists
+ * Servlet implementation class CreatePlaylist
  */
-@WebServlet("/AllPlaylists")
-public class AllPlaylists extends HttpServlet {
+@WebServlet("/CreatePlaylist")
+public class CreatePlaylist extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public AllPlaylists() {
+    public CreatePlaylist() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -38,33 +38,33 @@ public class AllPlaylists extends HttpServlet {
 			return;
 		}
 		
-		if(request.getParameter("type") == null ) {
+		if(request.getParameter("name") == null) {
 			response.getWriter().print("Incorrect Parameters Provided");
 			return;
 		}
-		
+				
+		String playlist_name = request.getParameter("name");
+		if(playlist_name.equals("")) {
+			response.getWriter().print("Enter Valid Playlist Name");
+			return;
+		}
 		int user_id = (Integer) session.getAttribute("user_id");
-		int type = Integer.parseInt(request.getParameter("type"));
-		
-		String query1 = "";
-		if(type == 0)
-			query1 = "select playlist_id, name from user_playlist where user_id = ?";
-		else
-			query1 = "select playlist_id, name from user_playlist where user_id = ? and playlist_type = 0";
-		String res1 = DbHelper.executeQueryJson(query1, 
-				new DbHelper.ParamType[] {DbHelper.ParamType.INT}, new Object[] {user_id});
-		
 		JSONParser parser = new JSONParser();
+		
+		String query1 = "insert into user_playlist (user_id, name) values (?, ?);";
+		String res1 = DbHelper.executeUpdateJson(query1, 
+				new DbHelper.ParamType[] {DbHelper.ParamType.INT, DbHelper.ParamType.STRING},
+				new Object[] {user_id, playlist_name});
 		JSONObject json1 = new JSONObject();
-
 		try {
 			json1 = (JSONObject) parser.parse(res1);
 		} catch (ParseException e) {
 			e.printStackTrace();
-		}
+		}		
 		
 		response.getWriter().print(json1.toString());
 	}
+
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)

@@ -56,6 +56,13 @@ class _PlayerWidgetState extends State<PlayerWidget> {
     _audioPlayer.stop();
   }
 
+  Widget playPause() {
+    if(_isPlaying)
+      return new Icon(Icons.pause);
+    else
+      return new Icon(Icons.play_arrow);
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Column(
@@ -92,12 +99,8 @@ class _PlayerWidgetState extends State<PlayerWidget> {
             ),
                 color: up_color),
             new IconButton(
-                onPressed: _isPlaying ? null : () => _play(),
-                icon: new Icon(Icons.play_arrow),
-                color: Colors.cyan),
-            new IconButton(
-                onPressed: _isPlaying ? () => _pause() : null,
-                icon: new Icon(Icons.pause),
+                onPressed: _isPlaying ? () => _pause() : () => _play(),
+                icon: playPause(),
                 color: Colors.cyan),
             new IconButton(
                 onPressed: _isPlaying || _isPaused ? () => _stop() : null,
@@ -141,7 +144,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
                 children: [
                   new CircularProgressIndicator(
                     value: 1.0,
-                    valueColor: new AlwaysStoppedAnimation(Colors.grey[300]),
+                    valueColor: new AlwaysStoppedAnimation(Colors.white),
                   ),
                   new CircularProgressIndicator(
                     value: _position != null && _position.inMilliseconds > 0
@@ -156,7 +159,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
               _position != null
                   ? '${_positionText ?? ''} / ${_durationText ?? ''}'
                   : _duration != null ? _durationText : '',
-              style: new TextStyle(fontSize: 24.0),
+              style: new TextStyle(fontSize: 24.0, color: Colors.white),
             ),
           ],
         ),

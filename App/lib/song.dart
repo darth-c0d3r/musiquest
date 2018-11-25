@@ -5,11 +5,12 @@ import 'dart:async';
 import 'session.dart';
 import 'config.dart';
 import 'home.dart';
+import 'PlayLists.dart';
 
 class SongPage extends StatefulWidget {
   SongPage({Key key, this.song}) : super(key: key);
-  @override
-  final Song song;
+
+  final Ids song;
   SongPageState createState() => new SongPageState();
 }
 
@@ -28,7 +29,6 @@ class SongPageState extends State<SongPage> {
     return (await s.get(url));
   }
 
-  @override
   Widget dataValues(String s, String next,TextStyle t, TextAlign a) {
     if(_data <= 0){
       return Text(
@@ -42,7 +42,7 @@ class SongPageState extends State<SongPage> {
       );
     }
   }
-  @override
+
   Widget buildAppbar() {
     return new AppBar(
       bottomOpacity: 0.0,
@@ -52,7 +52,13 @@ class SongPageState extends State<SongPage> {
       leading: new IconButton(
         icon: Icon(Icons.arrow_back),
         onPressed: () {
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(uname: widget.song.uname)));
+          if(_data > 0 && widget.song.idx >= 0){
+            Navigator.pop(context);
+          } else {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomePage(uname: widget.song.uname)));
+          }
         },
       ),
       actions: <Widget>[
@@ -62,9 +68,9 @@ class SongPageState extends State<SongPage> {
             //size: 32.0,
           ),
           onPressed: () {
-            setState(() {
-
-            });
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => PlaylistsPage(uname: widget.song.uname, type: 1, song_id: widget.song.id)));
           },
           color: Colors.white,
         ),
@@ -106,7 +112,6 @@ class SongPageState extends State<SongPage> {
     getDetails();
   }
 
-  @override
   Widget playSong() {
     if(_data <= 0) {
       return Text(status);
@@ -163,10 +168,51 @@ class SongPageState extends State<SongPage> {
 
                           SizedBox(height: 24.0),
 
-                          dataValues(
-                            'num_views',' Views',
-                            TextStyle(color: Colors.white, fontSize: 16.0),
-                            TextAlign.center
+                          new Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              new InkWell(
+                                child: new Text(
+                                  'Prev',
+                                  style: TextStyle(color: Colors.white, fontSize: 16.0),
+                                ),
+                                onTap: () {
+                                  final Ids prev_song = widget.song;
+                                  if(widget.song.idx >= 0){
+                                    prev_song.idx = (widget.song.idx + widget.song.lists.length - 1)%widget.song.lists.length;
+                                    prev_song.id = '${widget.song.lists[prev_song.idx]['song_id']}';
+                                  }
+                                  Navigator.pushReplacement(
+                                    context, MaterialPageRoute(builder: (context) => SongPage(song: prev_song,)));
+                                },
+                              ),
+
+                              SizedBox(width: 32.0,),
+
+                              dataValues(
+                                  'num_views',' Views',
+                                  TextStyle(color: Colors.white, fontSize: 16.0),
+                                  TextAlign.center
+                              ),
+
+                              SizedBox(width: 32.0,),
+
+                              new InkWell(
+                                child: new Text(
+                                  'Next',
+                                  style: TextStyle(color: Colors.white, fontSize: 16.0),
+                                ),
+                                onTap: () {
+                                  final Ids prev_song = widget.song;
+                                  if(widget.song.idx >= 0){
+                                    prev_song.idx = (widget.song.idx + 1)%widget.song.lists.length;
+                                    prev_song.id = '${widget.song.lists[prev_song.idx]['song_id']}';
+                                  }
+                                  Navigator.pushReplacement(
+                                    context, MaterialPageRoute(builder: (context) => SongPage(song: prev_song,)));
+                                },
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -182,9 +228,4 @@ class SongPageState extends State<SongPage> {
       ),
     );
   }
-}
-
-class Song {
-  String uname;
-  var id;
 }

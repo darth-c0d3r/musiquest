@@ -4,10 +4,13 @@ import 'dart:async';
 import 'session.dart';
 import 'config.dart';
 import 'song.dart';
+import 'album.dart';
+import 'artist.dart';
+import 'PlayLists.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.uname}) : super(key: key);
-  @override
+
   final String uname;
   HomePageState createState() => new HomePageState();
 }
@@ -45,7 +48,6 @@ class HomePageState extends State<HomePage> {
     return (await s.get(url));
   }
 
-  @override
   Widget buildBottombar() {
     return new Container(
       height: 48.0,
@@ -143,7 +145,6 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  @override
   Widget buildAppbar() {
     return new AppBar(
       title: const Text(
@@ -172,7 +173,6 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  @override
   Widget buildType() {
     if (_data == 0) {
       return new Text(
@@ -317,7 +317,6 @@ class HomePageState extends State<HomePage> {
     }
   }
 
-  @override
   Widget _buildList(dynamic each_row) {
     return  ListView.builder(
       padding: const EdgeInsets.all(16.0),
@@ -329,7 +328,6 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  @override
   Widget image(){
     String text = '';
     if(_data == 1)
@@ -345,25 +343,29 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  @override
   Widget _buildRow(dynamic d) {
     return GestureDetector(
       onTap: () {
+        final Ids song = new Ids();
+        song.idx = null;
+        song.lists = null;
         if(_data == 1){
-          final Song song = new Song();
           song.uname = widget.uname;
           song.id = '${d['song_id']}';
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SongPage(song: song,)));
+          song.idx = -1;
+          dynamic single_list = <dynamic>[];
+          single_list.add(d);
+          song.lists = single_list;
+          Navigator.push(context, MaterialPageRoute(builder: (context) => SongPage(song: song,)));
         } else if(_data == 2) {
-            final Song song = new Song();
             song.uname = widget.uname;
+            song.idx = 0;
             song.id = '${d['album_id']}';
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SongPage(song: song,)));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => AlbumPage(album: song,)));
         } else if(_data == 3) {
-            final Song song = new Song();
             song.uname = widget.uname;
             song.id = '${d['artist_id']}';
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SongPage(song: song,)));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => ArtistPage(artist: song,)));
         }
       },
 
@@ -548,9 +550,9 @@ class HomePageState extends State<HomePage> {
 
               new ListTile(
                 title: new Text(
-                  widget.uname,
+                  widget.uname.toString(),
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 24.0,),
+                  style: TextStyle(fontSize: 24.0, color: Colors.black),
                   softWrap: true,
                 ),
               ),
@@ -566,7 +568,9 @@ class HomePageState extends State<HomePage> {
                   textAlign: TextAlign.left,
                 ),
                 onTap: (){
-                  Navigator.pop(context);
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => PlaylistsPage(uname: widget.uname, type: 0, song_id : "-1")));
                 },
                 leading: Icon(
                   Icons.library_music,
@@ -643,4 +647,11 @@ class HomePageState extends State<HomePage> {
       ),
     );
   }
+}
+
+class Ids {
+  String uname;
+  var id;
+  dynamic lists;
+  int idx;
 }
