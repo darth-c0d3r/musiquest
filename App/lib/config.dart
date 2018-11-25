@@ -25,4 +25,8 @@ class config {
   final rmvpl       = 'http://' + ip + ':' + port + '/' + project + '/RemovePlaylist';
   final rmvfrompl   = 'http://' + ip + ':' + port + '/' + project + '/RemoveFromPlaylist';
   final search      = 'http://' + ip + ':' + port + '/' + project + '/SearchServlet';
+  final savequeue   = 'http://' + ip + ':' + port + '/' + project + '/SaveQueue';
+  final flushqueue  = 'http://' + ip + ':' + port + '/' + project + '/ClearQueue';
+  final DeleteAcnt  = 'http://' + ip + ':' + port + '/' + project + '/DeleteAccount';
+  final chngpwd     = 'http://' + ip + ':' + port + '/' + project + '/ChangePassword';
 }

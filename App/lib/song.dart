@@ -109,6 +109,7 @@ class SongPageState extends State<SongPage> {
       setState(() {
         _data = 1;
         link = song_data[0]['youtube_link'];
+        print(song_data[0]['relation_type']);
       });
     });
 
@@ -121,11 +122,13 @@ class SongPageState extends State<SongPage> {
     getDetails();
   }
 
-  Widget playSong(Ids song) {
+  Widget playSong() {
     if(_data <= 0) {
       return Text(status);
     } else {
-      return PlayerWidget(url: link, id: widget.song.id, song: song, mute: mute,);
+      return PlayerWidget(
+          url: link, id: widget.song.id,
+          song: widget.song, mute: mute, type: song_data[0]['relation_type']);
     }
   }
 
@@ -194,7 +197,7 @@ class SongPageState extends State<SongPage> {
                 ),
               ),
 
-              playSong(widget.song),
+              playSong(),
             ],
           ),
         ],

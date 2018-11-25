@@ -9,6 +9,7 @@ import 'artist.dart';
 import 'PlayLists.dart';
 import 'search.dart';
 import 'queue.dart';
+import 'ChangePwd.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.uname}) : super(key: key);
@@ -61,7 +62,7 @@ class HomePageState extends State<HomePage> {
             content: null,
             actions: <Widget>[
               FlatButton(
-                child: Text('Add!'),
+                child: Text('CONFIRM'),
                 onPressed: () {
                   dynamic data = {
                     'song_id': songId,
@@ -74,9 +75,40 @@ class HomePageState extends State<HomePage> {
                 },
               ),
               FlatButton(
-                child: Text('Cancel'),
+                child: Text('CANCEL'),
                 onPressed: () {
                   Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        }
+    );
+  }
+
+  Future<void> delAcnt(BuildContext context2){
+    return showDialog<void>(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Delete Account Permanently?'),
+            content: null,
+            actions: <Widget>[
+              FlatButton(
+                child: Text('CONFIRM'),
+                onPressed: () {
+                  s.get(cfg.DeleteAcnt).then((ret) {
+                    Navigator.pop(context);
+                    Navigator.popUntil(context2, ModalRoute.withName('/'),);
+                  });
+                },
+              ),
+              FlatButton(
+                child: Text('CANCEL'),
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context2);
                 },
               ),
             ],
@@ -653,7 +685,7 @@ class HomePageState extends State<HomePage> {
                   textAlign: TextAlign.left,
                 ),
                 onTap: (){
-                  Navigator.pop(context);
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => ChangePwdPage(uname: widget.uname)));
                 },
                 leading: Icon(
                   Icons.build,
@@ -672,7 +704,7 @@ class HomePageState extends State<HomePage> {
                   textAlign: TextAlign.left,
                 ),
                 onTap: (){
-                  Navigator.pop(context);
+                  delAcnt(context);
                 },
                 leading: Icon(
                   Icons.delete_forever,

@@ -210,7 +210,6 @@ class ArtistPageState extends State<ArtistPage> {
                               'artist_id': widget.artist.id,
                               'value': value.toString(),
                             };
-                            print(value);
                             s.post(cfg.updateArtist, data).then((ret){
 
                             });

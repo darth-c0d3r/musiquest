@@ -14,8 +14,9 @@ class PlayerWidget extends StatefulWidget {
   var id;
   final Ids song;
   final bool mute;
+  final int type;
 
-  PlayerWidget({@required this.url, this.id, this.song, this.mute});
+  PlayerWidget({@required this.url, this.id, this.song, this.mute, this.type});
 
   @override
   State<StatefulWidget> createState() {
@@ -48,10 +49,22 @@ class _PlayerWidgetState extends State<PlayerWidget> {
 
   _PlayerWidgetState(this.url, this.id);
 
+  void initvalues(){
+    print("TYPE OF RELATIION: " + widget.type.toString());
+    if(widget.type == 1){
+      up = 1;
+      up_color = Colors.green;
+    } else if(widget.type == -1) {
+      dn  = 1;
+      dn_color = Colors.red;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
 
+    initvalues();
     _initAudioPlayer();
 
     _play();
@@ -78,6 +91,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
     } else {
       _audioPlayer.setVolume(1.0);
     }
+
     return new Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
@@ -101,9 +115,8 @@ class _PlayerWidgetState extends State<PlayerWidget> {
                     'song_id': id,
                     'value': value.toString(),
                   };
-                  print(value);
                   s.post(cfg.updateSong, data).then((ret){
-
+                      print(ret);
                   });
                   dn = 0;
                 });
@@ -171,7 +184,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
                     'value': value.toString(),
                   };
                   s.post(cfg.updateSong, data).then((ret){
-
+                    print(ret);
                   });
                   up = 0;
                 });

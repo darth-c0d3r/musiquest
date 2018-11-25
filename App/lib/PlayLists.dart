@@ -30,6 +30,8 @@ class PlaylistsPageState extends State<PlaylistsPage> {
   }
 
   Future<void> AddToPlay(BuildContext context) async {
+    if(widget.type != 0)
+      return null;
     return showDialog<void>(
         context: context,
         barrierDismissible: true,
@@ -65,6 +67,36 @@ class PlaylistsPageState extends State<PlaylistsPage> {
                         MaterialPageRoute(builder: (context) => PlaylistsPage(uname: widget.uname, type: 0, song_id : "-1")));
                     });
                   }
+                },
+              ),
+            ],
+          );
+        }
+    );
+  }
+
+  Future<void> DeletePlay(BuildContext context, dynamic data) async {
+    return showDialog<void>(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Delete From Playlist?'),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('CONFIRM'),
+                onPressed: () {
+                  s.post(cfg.rmvpl, data).then((ret){
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => PlaylistsPage(uname: widget.uname, type: 0, song_id : "-1")));
+                  });
+                },
+              ),
+              FlatButton(
+                child: Text('CANCEL'),
+                onPressed: () {
+                  Navigator.pop(context);
                 },
               ),
             ],
@@ -179,27 +211,20 @@ class PlaylistsPageState extends State<PlaylistsPage> {
           }
         },
       ),
-      trailing: deleted('${d['playlist_id']}'),
+      trailing: deleted('${d['playlist_id']}', context, '${d['playlist_type']}'),
     );
   }
 
 
-  Widget deleted(var id) {
-    if(widget.type == 0) {
+  Widget deleted(var id, BuildContext context2, var type) {
+    if(widget.type == 0 && type != '2') {
       return new IconButton(
           icon: new Icon(Icons.delete, color: Colors.white, size: 24.0,),
           onPressed: (){
             dynamic data = {
               'playlist_id' : id
             };
-
-
-
-            s.post(cfg.rmvpl, data).then((ret){
-              Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => PlaylistsPage(uname: widget.uname, type: 0, song_id : "-1")));
-            });
+            DeletePlay(context2, data);
           }
       );
     } else

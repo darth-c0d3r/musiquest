@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'dart:async';
 import 'session.dart';
 import 'config.dart';
 import 'song.dart';
@@ -13,6 +14,17 @@ class QueuePage extends StatefulWidget {
   QueuePageState createState() => new QueuePageState();
 }
 
+class type {
+  final Text titles;
+  final bool save;
+  const type({this.titles, this.save});
+}
+
+const List<type> types = <type> [
+  const type(titles: Text('Save Queue'), save: true),
+  const type(titles: Text('Flush Queue'), save: false),
+];
+
 class QueuePageState extends State<QueuePage> {
 
   final Session s = new Session();
@@ -21,8 +33,88 @@ class QueuePageState extends State<QueuePage> {
   dynamic songs_data = <dynamic>[];
   bool _data = false;
   final config cfg = new config();
+  TextEditingController plName = new TextEditingController();
 
-  Widget buildAppbar() {
+  Future<void> SaveQueue(BuildContext context2) async {
+    return showDialog<void>(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Enter Playlist Name'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  new TextFormField(
+                    controller: plName,
+                    keyboardType: TextInputType.text,
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Please enter PlayListName';
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('CONFIRM'),
+                onPressed: () {
+                  dynamic data = {
+                    'name': plName.text
+                  };
+                  s.post(cfg.savequeue, data).then((ret){
+                    Navigator.pop(context);
+                    Navigator.pushReplacement(
+                        context, MaterialPageRoute(builder: (context2) => QueuePage(uname: widget.uname,queue_id: widget.queue_id,)));
+                  });
+                },
+              ),
+              FlatButton(
+                child: Text('CANCEL'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        }
+    );
+  }
+
+  Future<void> FlushQueue(BuildContext context2) async {
+    return showDialog<void>(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Flush the Queue?'),
+            content: null,
+            actions: <Widget>[
+              FlatButton(
+                child: Text('CONFIRM'),
+                onPressed: () {
+                  s.get(cfg.flushqueue).then((ret){
+                    Navigator.pop(context);
+                    Navigator.pushReplacement(
+                        context, MaterialPageRoute(builder: (context2) => QueuePage(uname: widget.uname,queue_id: widget.queue_id,)));
+                  });
+                },
+              ),
+              FlatButton(
+                child: Text('CANCEL'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        }
+    );
+  }
+
+  Widget buildAppbar(BuildContext context2) {
     return new AppBar(
       bottomOpacity: 0.0,
       title: Text('My Queue', style: TextStyle(color: Colors.white),textAlign: TextAlign.center,),
@@ -34,23 +126,73 @@ class QueuePageState extends State<QueuePage> {
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(uname: widget.uname)));
         },
       ),
+      actions: <Widget>[
+        new PopupMenuButton(
+          itemBuilder: (BuildContext context){
+            return types.map((type t){
+              return new PopupMenuItem(
+                child: new ListTile(
+                  title: t.titles,
+                  onTap: (){
+                    if(t.save){
+                      SaveQueue(context2);
+                    } else {
+                      FlushQueue(context2);
+                    }
+                  },
+                )
+              );
+            }).toList();
+          }
+        ),
+      ],
     );
   }
 
-  Widget buildSongs() {
+  Future<void> DeleteFromQueue(BuildContext context, dynamic data) async {
+    return showDialog<void>(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Delete From Queue?'),
+            content: null,
+            actions: <Widget>[
+              FlatButton(
+                child: Text('CONFIRM'),
+                onPressed: () {
+                  s.post(cfg.rmvfrompl, data).then((ret){
+                    Navigator.pushReplacement(
+                        context, MaterialPageRoute(builder: (context) => QueuePage(uname: widget.uname,queue_id: widget.queue_id,)));
+                  });
+                },
+              ),
+              FlatButton(
+                child: Text('CANCEL'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        }
+    );
+  }
+
+  Widget buildSongs(BuildContext context) {
     return  ListView.builder(
       padding: const EdgeInsets.all(16.0),
       scrollDirection: Axis.vertical,
       itemBuilder: (context, i) {
         if(i.isOdd) return Divider(height: 16.0,color: Colors.white,);
         final index = i ~/2;
-        return _buildRow(songs_data[index],index,songs_data);
+        return _buildRow(songs_data[index],index,songs_data, context);
       },
       itemCount:2* songs_data.length,
     );
   }
 
-  Widget _buildRow(dynamic d, int idx, dynamic lists) {
+  Widget _buildRow(dynamic d, int idx, dynamic lists, BuildContext context2) {
     return new ListTile(
       leading: new GestureDetector(
         child: new Image.asset(
@@ -92,10 +234,7 @@ class QueuePageState extends State<QueuePage> {
               'song_id': '${d['song_id']}',
               'playlist_id' : widget.queue_id
             };
-            s.post(cfg.rmvfrompl, data).then((ret){
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) => QueuePage(uname: widget.uname,queue_id: widget.queue_id,)));
-            });
+            DeleteFromQueue(context2, data);
           }
       ),
     );
@@ -135,7 +274,7 @@ class QueuePageState extends State<QueuePage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: buildAppbar(),
+      appBar: buildAppbar(context),
 
       body: new Stack(
         children : <Widget>[
@@ -151,9 +290,15 @@ class QueuePageState extends State<QueuePage> {
             children: <Widget>[
               new Expanded(
                   child: new Container(
-                    child: buildSongs(),
+                    child: buildSongs(context),
                   )
               ),
+              SizedBox(height: 8.0,),
+              new Text(
+                'Long Press on Songs to add here',
+                style: TextStyle(color: Colors.white, fontSize: 12.0),
+              ),
+              SizedBox(height: 24.0,),
             ],
           ),
         ],

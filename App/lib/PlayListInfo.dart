@@ -27,6 +27,37 @@ class PlayListInfoPageState extends State<PlayListInfoPage> {
     return (await s.get(url));
   }
 
+  Future<void> DeleteFromPl(BuildContext context2, dynamic data) async {
+    return showDialog<void>(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Delete From Playlist?'),
+            content: null,
+            actions: <Widget>[
+              FlatButton(
+                child: Text('CONFIRM'),
+                onPressed: () {
+                  s.post(cfg.rmvfrompl, data).then((ret){
+                    Navigator.pop(context);
+                    Navigator.pushReplacement(
+                        context, MaterialPageRoute(builder: (context2) => PlayListInfoPage(playlist: widget.playlist,)));
+                  });
+                },
+              ),
+              FlatButton(
+                child: Text('CANCEL'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        }
+    );
+  }
+
   Widget buildAppbar() {
     return new AppBar(
       bottomOpacity: 0.0,
@@ -42,20 +73,20 @@ class PlayListInfoPageState extends State<PlayListInfoPage> {
     );
   }
 
-  Widget buildSongs() {
+  Widget buildSongs(BuildContext context) {
     return  ListView.builder(
       padding: const EdgeInsets.all(16.0),
       scrollDirection: Axis.vertical,
       itemBuilder: (context, i) {
         if(i.isOdd) return Divider(height: 16.0,color: Colors.white,);
         final index = i ~/2;
-        return _buildRow(songs_data[index],index,songs_data);
+        return _buildRow(songs_data[index],index,songs_data, context);
       },
       itemCount:2* songs_data.length,
     );
   }
 
-  Widget _buildRow(dynamic d, int idx, dynamic lists) {
+  Widget _buildRow(dynamic d, int idx, dynamic lists, BuildContext context2) {
     return new ListTile(
         leading: new GestureDetector(
           child: new Image.asset(
@@ -97,10 +128,7 @@ class PlayListInfoPageState extends State<PlayListInfoPage> {
               'song_id': '${d['song_id']}',
               'playlist_id' : widget.playlist.id
             };
-            s.post(cfg.rmvfrompl, data).then((ret){
-              Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => PlayListInfoPage(playlist: widget.playlist,)));
-            });
+            DeleteFromPl(context2, data);
           }
         ),
     );
@@ -156,7 +184,7 @@ class PlayListInfoPageState extends State<PlayListInfoPage> {
             children: <Widget>[
               new Expanded(
                   child: new Container(
-                    child: buildSongs(),
+                    child: buildSongs(context),
                   )
               ),
             ],
