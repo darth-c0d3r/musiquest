@@ -12,7 +12,7 @@ create table artist (
 create table album (
 	album_id serial primary key,
 	name varchar(256) not null,
-	artist_id integer references artist,
+	artist_id integer references artist on delete cascade,
 	num_views integer default 0,
 	num_likes integer default 0,
 	num_dislikes integer default 0	
@@ -21,8 +21,8 @@ create table album (
 create table song (
 	song_id serial primary key,
 	name varchar(256) not null,
-	album_id integer references album,
-	artist_id integer references artist,
+	album_id integer references album on delete cascade,
+	artist_id integer references artist on delete cascade,
 	genre varchar(20),
 	release_date integer, 
 	language varchar(30),
@@ -49,30 +49,30 @@ create table admin (
 
 create table user_playlist (
 	playlist_id serial primary key,
-	user_id integer references users,
+	user_id integer references users on delete cascade,
 	name varchar(256) not null,
 	playlist_type integer default 0
 );
 
 create table user_album (
-	album_id integer references song,
-	user_id integer references users,
+	album_id integer references song on delete cascade,
+	user_id integer references users on delete cascade,
 	relation_type integer default 0,
 	num_views integer default 1,
 	primary key (user_id, album_id)
 );
 
 create table user_artist (
-	artist_id integer references song,
-	user_id integer references users,
+	artist_id integer references song on delete cascade,
+	user_id integer references users on delete cascade,
 	relation_type integer default 0,
 	num_views integer default 1,
 	primary key (user_id, artist_id)
 );
 
 create table user_song (
-	song_id integer references song,
-	user_id integer references users,
+	song_id integer references song on delete cascade,
+	user_id integer references users on delete cascade,
 	relation_type integer default 0,
 	num_views integer default 1,
 	last_viewed timestamp default current_timestamp,
@@ -80,8 +80,8 @@ create table user_song (
 );
 
 create table song_playlist (
-	song_id integer references song,
-	playlist_id integer references user_playlist,
+	song_id integer references song on delete cascade,
+	playlist_id integer references user_playlist on delete cascade,
 	time_added timestamp default current_timestamp,
 	primary key (playlist_id, song_id)
 );

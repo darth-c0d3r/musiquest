@@ -7,8 +7,7 @@ https://stackoverflow.com/questions/6120657/how-to-generate-a-unique-hash-code-f
 *Clarifications:
 
 	- The user_playlist relation is essentially unique for each playlist, stores the user who created the playlist (and hence can make updates). Hence should contain all playlist related data.
-	- The song_playlist is a relation denoting which song belongs to which playlist 
-
+	- The song_playlist is a relation denoting which song belongs to which playlist. 
 
 *Functionality Specifications:
 
@@ -17,6 +16,17 @@ https://stackoverflow.com/questions/6120657/how-to-generate-a-unique-hash-code-f
 
 	- Difference between temporary and permanent playlist?? None in terms of back-end
 
+	- Remember to check uniqueness of playlist names for a user when creating new playlist
+
+	- 0=DEFAULT 1=MYQUEUE 2=SUGGESTED
+
+	- only default playlist should be deletable
+
+	- What to do for songs with no album name?
+
 *Future Scope:
 	
 	- Autoplay songs	 
+
+
+	delete from song_playlist where playlist_id = 1 and exists (select * from user_playlist where user_id = 1 and playlist_id = 1 and playlist_type = 0

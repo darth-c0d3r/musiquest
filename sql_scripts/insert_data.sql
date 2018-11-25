@@ -1269,3 +1269,26 @@ insert into song(name, album_id, artist_id, release_date, genre, lyrics_link, yo
 insert into song(name, album_id, artist_id, release_date, genre, lyrics_link, youtube_link, language) select 'Worn Me Down', album.album_id, artist.artist_id,  '2019', 'blues', 'a3', 'https://www.cse.iitb.ac.in/~rathi/audios/audio7.mp3', 'hindi' from album join artist on album.artist_id = artist.artist_id where artist.name = 'Rachael Yamagata' and album.name = 'Album M';
 insert into song(name, album_id, artist_id, release_date, genre, lyrics_link, youtube_link, language) select 'Radiance', album.album_id, artist.artist_id,  '1996', 'classic', 'a2', 'https://www.cse.iitb.ac.in/~rathi/audios/audio3.mp3', 'hindi' from album join artist on album.artist_id = artist.artist_id where artist.name = 'Keith Jarrett' and album.name = 'Album S';
 insert into song(name, album_id, artist_id, release_date, genre, lyrics_link, youtube_link, language) select 'ABC', album.album_id, artist.artist_id,  '1996', 'electric', 'a1', 'https://www.cse.iitb.ac.in/~rathi/audios/audio5.mp3', 'japanese' from album join artist on album.artist_id = artist.artist_id where artist.name = 'The Jackson 5' and album.name = 'Album V';
+
+insert into user_playlist(user_id, name) values (1,'Play1');
+insert into user_playlist(user_id, name) values (1,'Play2');
+insert into user_playlist(user_id, name) values (1,'Play3');
+insert into user_playlist(user_id, name) values (2,'Play2');
+insert into user_playlist(user_id, name) values (2,'Play1');
+insert into user_playlist(user_id, name) values (3,'Play5');
+insert into user_playlist(user_id, name) values (4,'Play2');
+insert into user_playlist(user_id, name) values (4,'Play7');
+
+insert into song_playlist(song_id, playlist_id) values (1,1);
+insert into song_playlist(song_id, playlist_id) values (1,2);
+insert into song_playlist(song_id, playlist_id) values (1,5);
+insert into song_playlist(song_id, playlist_id) values (20,1);
+insert into song_playlist(song_id, playlist_id) values (3,1);
+insert into song_playlist(song_id, playlist_id) values (8,1);
+insert into song_playlist(song_id, playlist_id) values (6,2);
+insert into song_playlist(song_id, playlist_id) values (9,3);
+insert into song_playlist(song_id, playlist_id) values (12,4);
+insert into song_playlist(song_id, playlist_id) values (17,4);
+insert into song_playlist(song_id, playlist_id) values (54,6);
+insert into song_playlist(song_id, playlist_id) values (37,7);
+	
