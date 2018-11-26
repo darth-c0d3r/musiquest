@@ -17,7 +17,6 @@ dependencies:
     sdk: flutter
 
   flutter_launcher_icons: "^0.6.1"
-  flutter_youtube: "^1.1.2"
   audioplayers: ^0.7.8
 
 flutter_icons:
@@ -51,11 +50,12 @@ flutter:
     - icon/music.png
     - icon/login.png
     - icon/login2.png
-    - icon/register.png
     - icon/bg.png
     - icon/song.png
     - icon/album.png
     - icon/artist.png
+    - icon/left-swipe.gif
+    - icon/right-swipe.gif
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
