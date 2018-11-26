@@ -26,7 +26,7 @@ create table song (
 	genre varchar(20),
 	release_date integer, 
 	language varchar(30),
-	lyrics_link varchar(256),
+	lyrics_link text,
 	youtube_link varchar(256) not null,
 	num_views integer default 0,
 	num_likes integer default 0,
@@ -85,3 +85,5 @@ create table song_playlist (
 	time_added timestamp default current_timestamp,
 	primary key (playlist_id, song_id)
 );
+
+create extension pg_trgm;

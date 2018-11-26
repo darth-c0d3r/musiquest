@@ -120,18 +120,18 @@ public class LoginServlet extends HttpServlet {
 						"select song_artist_score.user_id, song_id, song_score+coalesce(album_score,0)+artist_score as score \n" + 
 						"from song_artist_score left outer join album_score \n" + 
 						"on (song_artist_score.user_id, song_artist_score.album_id) = (album_score.user_id, album_score.album_id)),\n" + 
-						"top_users as (select  all_user.user_id as their_id, (count(*)^1.5)/(sum(my_user.score - all_user.score)^2) as similarity \n" + 
-						"from (select * from final_score where user_id = ?) as my_user join (select * from final_score where user_id != ?) as all_user \n" + 
+						"top_users as (select  all_user.user_id as their_id, ((count(*)^1.5)+5)/((sum(my_user.score - all_user.score)^2)+5) as similarity \n" + 
+						"from (select * from final_score where user_id = ?) as my_user join final_score as all_user \n" + 
 						"on my_user.song_id = all_user.song_id group by their_id order by similarity desc limit 10),\n" + 
 						"temp as (select song_id, user_id, similarity from user_song join top_users on user_id = their_id) \n" + 
 						"select song_id, sum(similarity*score) as song_rec from temp natural join final_score \n" + 
-						"group by song_id order by song_rec desc limit 10) insert into song_playlist(song_id, playlist_id) select song_id, playlist_id from best_songs, user_playlist where user_id = ? and playlist_type = 2;";
+						"group by song_id order by song_rec desc limit 10) insert into song_playlist(song_id, playlist_id) select song_id, playlist_id from best_songs, user_playlist where user_id = ? and playlist_type = 2";
 				
 				JSONParser parser = new JSONParser();
 				JSONObject json1 = new JSONObject();
 				String res1 = DbHelper.executeUpdateJson(query, 
-						new DbHelper.ParamType[] {DbHelper.ParamType.INT, DbHelper.ParamType.INT, DbHelper.ParamType.INT}, 
-						new Object[] {user_id, user_id, user_id});
+						new DbHelper.ParamType[] {DbHelper.ParamType.INT, DbHelper.ParamType.INT}, 
+						new Object[] {user_id, user_id});
 				
 				try {
 					json1 = (JSONObject) parser.parse(res1);

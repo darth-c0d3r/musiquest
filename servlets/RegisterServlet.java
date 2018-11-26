@@ -39,6 +39,7 @@ public class RegisterServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
+	@SuppressWarnings("unused")
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
 		HttpSession session = request.getSession();
@@ -93,10 +94,19 @@ public class RegisterServlet extends HttpServlet {
 					new DbHelper.ParamType[] {DbHelper.ParamType.INT},
 					new Object[] {user_id});
 				
-				query = "insert into user_playlist(user_id, name, playlist_type) values (?,'Made For You',2)";
-				DbHelper.executeUpdateJson(query, 
-					new DbHelper.ParamType[] {DbHelper.ParamType.INT},
-					new Object[] {user_id});
+				query = "insert into user_playlist(user_id, name, playlist_type) values (?,'Made For You',2) returning playlist_id";
+				List<List<Object>> res1 = DbHelper.executeQueryList(query, 
+						new DbHelper.ParamType[] {DbHelper.ParamType.INT, DbHelper.ParamType.STRING},
+						new Object[] {user_id});
+				
+				int playlist_id = (Integer) res1.get(0).get(0);
+				
+				String query2 = "insert into song_playlist(song_id, playlist_id)"
+						+ " select song_id, ? from song order by num_views desc limit 10";
+				String res2 = DbHelper.executeUpdateJson(query2, 
+						new DbHelper.ParamType[] {DbHelper.ParamType.INT},
+						new Object[] {playlist_id});		
+				
 			}
 			response.getWriter().print(json);
 

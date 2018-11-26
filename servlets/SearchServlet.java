@@ -47,10 +47,11 @@ public class SearchServlet extends HttpServlet {
 		JSONParser parser = new JSONParser();
 		// create extension pg_trgm;
 
-		String query1 = "select song_id, name from song order by word_similarity(name, ?) desc limit 5";
+		String query1 = "(select song_id, name from song order by word_similarity(name, ?) desc limit 5)"
+				+ " UNION (select song_id, name from song order by word_similarity(lyrics_link, ?) desc limit 3)";
 		String res1 = DbHelper.executeQueryJson(query1, 
-				new DbHelper.ParamType[] {DbHelper.ParamType.STRING},
-				new Object[] {search_key});
+				new DbHelper.ParamType[] {DbHelper.ParamType.STRING, DbHelper.ParamType.STRING},
+				new Object[] {search_key, search_key});
 		JSONObject json1 = new JSONObject();
 		try {
 			json1 = (JSONObject) parser.parse(res1);
@@ -85,7 +86,6 @@ public class SearchServlet extends HttpServlet {
 		ret.put("albums", json2);
 		ret.put("artists" , json3);
 		response.getWriter().print(ret.toString());
-		
 		
 	}
 
