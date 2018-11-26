@@ -204,7 +204,11 @@ class _PlayerWidgetState extends State<PlayerWidget> {
                   _duration == null
                       ? new Container()
                       : new Slider(
-                      value: _position != null ? _position.inMilliseconds + 0.0 : 0.0,
+                      value: _position != null ?
+                      (_position.inMilliseconds <= _duration.inMilliseconds
+                          ? _position.inMilliseconds + 0.0 : _duration.inMilliseconds + 0.0
+                        )
+                        : 0.0,
                       onChanged: (double val2){
                         int val = val2.toInt();
                         int millisec = val%1000;
@@ -214,6 +218,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
                         sec -= minute*60;
                         minute -= hr*60;
                         Duration dur = new Duration(hours: hr, minutes: minute, seconds: sec, milliseconds: millisec);
+                        if(dur.inMilliseconds > _duration.inMilliseconds)dur = _duration;
                         _seek(dur);
                       },
                       min: 0.0,

@@ -452,7 +452,8 @@ class HomePageState extends State<HomePage> {
               '${d['name']}',
               textAlign: TextAlign.center,
               style: TextStyle( color: Colors.white),
-            // overflow: TextOverflow.ellipsis,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
             ),
           ],
         ),
@@ -564,6 +565,16 @@ class HomePageState extends State<HomePage> {
     });
   }
 
+//  Widget playSong() {
+//    if(_data <= 0) {
+//      return Text(loading);
+//    } else {
+//      return PlayerWidget(
+//          url: widget.player_info.url, id: widget.player_info.song.id,
+//          song: widget.player_info.song, mute: widget.player_info.mute, type: widget.player_info.type);
+//    }
+//  }
+
   @override
   void initState() {
     super.initState();
@@ -573,6 +584,7 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+
     return new WillPopScope(
       onWillPop: () async => false,
       child: new Scaffold(
@@ -599,6 +611,7 @@ class HomePageState extends State<HomePage> {
                     )
                 ),
                 buildBottombar(), // Bottom bar build
+                //playSong(),
               ],
             ),
           ],
@@ -750,4 +763,12 @@ class Ids {
   var id;
   dynamic lists;
   int idx;
+}
+
+class Player_Info{
+  String url;
+  Ids song;
+  bool mute;
+  int type;
+  bool playing;
 }

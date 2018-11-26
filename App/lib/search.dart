@@ -74,8 +74,10 @@ class SearchPageState extends State<SearchPage> {
           });
           getvalues(key);
         },
+        style: TextStyle(color: Colors.white, fontSize: 16.0),
         decoration: InputDecoration(
           hintText: 'Search...',
+          hintStyle: TextStyle(color: Colors.white),
         ),
       ),
       centerTitle: true,
@@ -103,10 +105,12 @@ class SearchPageState extends State<SearchPage> {
 
   Widget buildBody(BuildContext context) {
     if (_data == 0) {
-      return new Text(
-        loading,
-        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        textAlign: TextAlign.center,
+      return new Center(
+        child: new Text(
+          loading,
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
+        ),
       );
     }
     else if(_data == 1) {

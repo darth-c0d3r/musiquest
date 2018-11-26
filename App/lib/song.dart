@@ -18,13 +18,14 @@ class SongPageState extends State<SongPage> {
 
   final Session s = new Session();
 
-  String link = 'https://www.cse.iitb.ac.in/~rathi/audios/perfect-slumbers.mp3';
+  String link = 'https://www.cse.iitb.ac.in/~rathi/audios/audio1.mp3';
 
   String status = 'Loading...';
   final config cfg = new config();
   dynamic song_data = <dynamic>[];
   int _data = 0;
   bool mute = false;
+  bool lyrics = false;
 
   Future getDataString(String url) async {
     return (await s.get(url));
@@ -115,6 +116,99 @@ class SongPageState extends State<SongPage> {
 
   }
 
+  Widget buildSongBody(){
+    if(lyrics){
+      return new Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+        margin: const EdgeInsets.symmetric(horizontal: 40.0),
+        color: Colors.purpleAccent,
+        child: new Center(
+          child: new Column(
+            children: <Widget>[
+              new Text(
+                'Lyrics',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24.0),
+              ),
+              SizedBox(height: 12.0),
+              new Text(
+                song_data[0]['lyrics_link'],
+                style: TextStyle(color: Colors.white,),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    else{
+      return new Container(
+        padding: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 2.0),
+        margin: const EdgeInsets.symmetric(horizontal: 10.0),
+        child: new Center(
+          child: new Column(
+            children: <Widget>[
+              new Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  new Text(
+                    'Swipe For Lyrics',
+                    style: TextStyle(color: Colors.white, fontSize: 16.0),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(width: 8.0,),
+                  new Image.asset(
+                    'icon/left-swipe.gif',
+                    height: 16.0,
+                  ),
+                ],
+              ),
+              SizedBox(height: 8.0,),
+              new Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                margin: const EdgeInsets.symmetric(horizontal: 40.0),
+                color: Colors.purpleAccent,
+                child: new Center(
+                  child: new Column(
+                    children: <Widget>[
+                      new Image.asset(
+                        'icon/song.png',
+                        height: 240.0,
+                      ),
+
+                      dataValues(
+                          'name','',
+                          TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 28.0),
+                          TextAlign.center
+                      ),
+
+                      dataValues(
+                          'artist_name','',
+                          TextStyle(color: Colors.white, fontSize: 20.0),
+                          TextAlign.center
+                      ),
+
+                      SizedBox(height: 24.0),
+
+                      new Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          dataValues(
+                              'num_views',' Views',
+                              TextStyle(color: Colors.white, fontSize: 16.0),
+                              TextAlign.center
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -151,48 +245,23 @@ class SongPageState extends State<SongPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              SizedBox(height: 24.0),
+              SizedBox(height: 8.0),
               new Expanded(
                 child: SingleChildScrollView(
-                  child: new Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-                    margin: const EdgeInsets.symmetric(horizontal: 40.0),
-                    color: Colors.purpleAccent,
-                    child: new Center(
-                      child: new Column(
-                        children: <Widget>[
-                          new Image.asset(
-                            'icon/song.png',
-                            height: 240.0,
-                          ),
-
-                          dataValues(
-                              'name','',
-                              TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 28.0),
-                              TextAlign.center
-                          ),
-
-                          dataValues(
-                            'artist_name','',
-                            TextStyle(color: Colors.white, fontSize: 20.0),
-                            TextAlign.center
-                          ),
-
-                          SizedBox(height: 24.0),
-
-                          new Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              dataValues(
-                                  'num_views',' Views',
-                                  TextStyle(color: Colors.white, fontSize: 16.0),
-                                  TextAlign.center
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+                  child: new GestureDetector(
+                    child: buildSongBody(),
+                    onHorizontalDragEnd: (DragEndDetails details){
+                      if (details.velocity.pixelsPerSecond.dx < -100.0 && !lyrics) {
+                        setState(() {
+                          lyrics = true;
+                        });
+                      }
+                      else if(details.velocity.pixelsPerSecond.dx > 100.0 && lyrics){
+                        setState(() {
+                          lyrics = false;
+                        });
+                      }
+                    },
                   ),
                 ),
               ),
