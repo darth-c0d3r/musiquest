@@ -109,6 +109,8 @@ class PlayListInfoPageState extends State<PlayListInfoPage> {
           _data ? '${d['name']}' : '',
           textAlign: TextAlign.left,
           style: TextStyle( color: Colors.white),
+          overflow: TextOverflow.ellipsis,
+          maxLines: 2,
         ),
         onTap: () {
           final Ids song = new Ids();
