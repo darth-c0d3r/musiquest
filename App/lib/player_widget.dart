@@ -194,23 +194,47 @@ class _PlayerWidgetState extends State<PlayerWidget> {
             ),
           ],
         ),
-        new Row(
+        new Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             new Padding(
               padding: new EdgeInsets.all(12.0),
               child: new Stack(
                 children: [
-                  new CircularProgressIndicator(
-                    value: 1.0,
-                    valueColor: new AlwaysStoppedAnimation(Colors.white),
+                  _duration == null
+                      ? new Container()
+                      : new Slider(
+                      value: _position != null ? _position.inMilliseconds + 0.0 : 0.0,
+                      onChanged: (double val2){
+                        int val = val2.toInt();
+                        int millisec = val%1000;
+                        int sec = (val/1000).floor();
+                        int minute = (val/60000).floor();
+                        int hr = (val/3600000).floor();
+                        sec -= minute*60;
+                        minute -= hr*60;
+                        Duration dur = new Duration(hours: hr, minutes: minute, seconds: sec, milliseconds: millisec);
+                        _seek(dur);
+                      },
+                      min: 0.0,
+                      max: _duration.inMilliseconds + 0.0,
+                      activeColor: Colors.cyan,
+                      inactiveColor: Colors.white,
                   ),
-                  new CircularProgressIndicator(
-                    value: _position != null && _position.inMilliseconds > 0
-                        ? _position.inMilliseconds / _duration.inMilliseconds
-                        : 0.0,
-                    valueColor: new AlwaysStoppedAnimation(Colors.cyan),
-                  ),
+//                  new Stack(
+//                    children: <Widget>[
+//                      new CircularProgressIndicator(
+//                        value: 1.0,
+//                        valueColor: new AlwaysStoppedAnimation(Colors.white),
+//                      ),
+//                      new CircularProgressIndicator(
+//                        value: _position != null && _position.inMilliseconds > 0
+//                            ? _position.inMilliseconds / _duration.inMilliseconds
+//                            : 0.0,
+//                        valueColor: new AlwaysStoppedAnimation(Colors.cyan),
+//                      ),
+//                    ],
+//                  ),
                 ],
               ),
             ),
@@ -267,6 +291,16 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   Future<int> _play() async {
     final result = await _audioPlayer.play(url, isLocal: false);
     if (result == 1) setState(() => _playerState = PlayerState.playing);
+    return result;
+  }
+
+  Future<int> _seek(Duration dur) async {
+    final result = await _audioPlayer.seek(dur);
+    if (result == 1) {
+      setState(() {
+        _position = dur;
+      });
+    }
     return result;
   }
 
