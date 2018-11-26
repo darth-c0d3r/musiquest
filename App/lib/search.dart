@@ -26,6 +26,7 @@ class SearchPageState extends State<SearchPage> {
   String loading = "Enter Search key...";
   int _data = 0;
   String key = '';
+  int special = 0;
 
   final config cfg = new config();
 
@@ -72,7 +73,8 @@ class SearchPageState extends State<SearchPage> {
             key = text;
             _data = 0;
           });
-          getvalues(key);
+          special++;
+          getvalues(key, special);
         },
         style: TextStyle(color: Colors.white, fontSize: 16.0),
         decoration: InputDecoration(
@@ -240,13 +242,14 @@ class SearchPageState extends State<SearchPage> {
     );
   }
 
-  void getvalues(var key){
+  void getvalues(var key, int curr){
     dynamic data = {
       'search_key': key
     };
     if(key == '') return;
     s.post(cfg.search, data).then((ret){
       print(ret);
+      if(curr < special) return;
       Map<String, dynamic> det = json.decode(ret);
       songs.clear();
       albums.clear();
@@ -281,9 +284,9 @@ class SearchPageState extends State<SearchPage> {
           loading = '${det['songs']['message']}';
         });
       }
-      setState(() {
-        _data = 1;
-      });
+        setState(() {
+          _data = 1;
+        });
     });
   }
 
@@ -291,7 +294,7 @@ class SearchPageState extends State<SearchPage> {
   void initState() {
     super.initState();
 
-    getvalues(key);
+    getvalues(key, special);
   }
 
   @override
