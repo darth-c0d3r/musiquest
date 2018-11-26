@@ -81,7 +81,7 @@ class PlaylistsPageState extends State<PlaylistsPage> {
         barrierDismissible: true,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Delete From Playlist?'),
+            title: Text('Delete Playlist?'),
             actions: <Widget>[
               FlatButton(
                 child: Text('CONFIRM'),

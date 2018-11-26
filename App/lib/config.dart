@@ -1,6 +1,6 @@
 
 class config {
-  static final ip = '10.42.0.1';
+  static final ip = '192.168.1.4';
   static final port = '8080';
   static final project = 'DBProject';
 

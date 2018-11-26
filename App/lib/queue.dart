@@ -215,6 +215,8 @@ class QueuePageState extends State<QueuePage> {
           _data ? '${d['name']}' : '',
           textAlign: TextAlign.left,
           style: TextStyle( color: Colors.white),
+          overflow: TextOverflow.ellipsis,
+          maxLines: 2,
         ),
         onTap: () {
           final Ids song = new Ids();
@@ -227,16 +229,43 @@ class QueuePageState extends State<QueuePage> {
           }
         },
       ),
-      trailing: new IconButton(
-          icon: Icon(Icons.delete, color: Colors.white, size: 24.0,),
-          onPressed: (){
-            dynamic data = {
-              'song_id': '${d['song_id']}',
-              'playlist_id' : widget.queue_id
-            };
-            DeleteFromQueue(context2, data);
-          }
-      ),
+      trailing: new Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          new IconButton(
+              icon: Icon(Icons.arrow_upward, color: Colors.white, size: 24.0,),
+              onPressed: (){
+                if(idx!=0){
+                  setState(() {
+                    dynamic temp = lists[idx-1];
+                    lists[idx-1] = lists[idx];
+                    lists[idx] = temp;
+                  });
+                }
+              }),
+          new IconButton(
+            icon: Icon(Icons.arrow_downward, color: Colors.white, size: 24.0,),
+            onPressed: (){
+              if(idx!=lists.length-1){
+                setState(() {
+                  dynamic temp = lists[idx+1];
+                  lists[idx+1] = lists[idx];
+                  lists[idx] = temp;
+                });
+              }
+            }),
+          new IconButton(
+              icon: Icon(Icons.delete, color: Colors.white, size: 24.0,),
+              onPressed: (){
+                dynamic data = {
+                  'song_id': '${d['song_id']}',
+                  'playlist_id' : widget.queue_id
+                };
+                DeleteFromQueue(context2, data);
+              }
+          ),
+        ],
+      )
     );
   }
 

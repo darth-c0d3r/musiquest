@@ -88,49 +88,76 @@ class PlayListInfoPageState extends State<PlayListInfoPage> {
 
   Widget _buildRow(dynamic d, int idx, dynamic lists, BuildContext context2) {
     return new ListTile(
-        leading: new GestureDetector(
-          child: new Image.asset(
-            'icon/song.png',
-            height: 32.0,
-          ),
-          onTap: (){
-            final Ids song = new Ids();
-            if(_data){
-              song.uname = widget.playlist.uname;
-              song.id = '${d['song_id']}';
-              song.idx = idx;
-              song.lists = lists;
-              Navigator.push(context, MaterialPageRoute(builder: (context) => SongPage(song: song,)));
-            }
-          },
+      leading: new GestureDetector(
+        child: new Image.asset(
+          'icon/song.png',
+          height: 32.0,
         ),
-        title: new InkWell(
-          child: new Text(
-            _data ? '${d['name']}' : '',
-            textAlign: TextAlign.left,
-            style: TextStyle( color: Colors.white),
-          ),
-          onTap: () {
-            final Ids song = new Ids();
-            if(_data){
-              song.uname = widget.playlist.uname;
-              song.id = '${d['song_id']}';
-              song.idx = idx;
-              song.lists = lists;
-              Navigator.push(context, MaterialPageRoute(builder: (context) => SongPage(song: song,)));
-            }
-          },
-        ),
-        trailing: new IconButton(
-          icon: Icon(Icons.delete, color: Colors.white, size: 24.0,),
-          onPressed: (){
-            dynamic data = {
-              'song_id': '${d['song_id']}',
-              'playlist_id' : widget.playlist.id
-            };
-            DeleteFromPl(context2, data);
+        onTap: (){
+          final Ids song = new Ids();
+          if(_data){
+            song.uname = widget.playlist.uname;
+            song.id = '${d['song_id']}';
+            song.idx = idx;
+            song.lists = lists;
+            Navigator.push(context, MaterialPageRoute(builder: (context) => SongPage(song: song,)));
           }
+        },
+      ),
+      title: new InkWell(
+        child: new Text(
+          _data ? '${d['name']}' : '',
+          textAlign: TextAlign.left,
+          style: TextStyle( color: Colors.white),
         ),
+        onTap: () {
+          final Ids song = new Ids();
+          if(_data){
+            song.uname = widget.playlist.uname;
+            song.id = '${d['song_id']}';
+            song.idx = idx;
+            song.lists = lists;
+            Navigator.push(context, MaterialPageRoute(builder: (context) => SongPage(song: song,)));
+          }
+        },
+      ),
+      trailing: new Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          new IconButton(
+            icon: Icon(Icons.arrow_upward, color: Colors.white, size: 24.0,),
+            onPressed: (){
+              if(idx!=0){
+                setState(() {
+                  dynamic temp = lists[idx-1];
+                  lists[idx-1] = lists[idx];
+                  lists[idx] = temp;
+                });
+              }
+            }),
+          new IconButton(
+            icon: Icon(Icons.arrow_downward, color: Colors.white, size: 24.0,),
+            onPressed: (){
+              if(idx!=lists.length-1){
+                setState(() {
+                  dynamic temp = lists[idx+1];
+                  lists[idx+1] = lists[idx];
+                  lists[idx] = temp;
+                });
+              }
+            }),
+          new IconButton(
+            icon: Icon(Icons.delete, color: Colors.white, size: 24.0,),
+            onPressed: (){
+              dynamic data = {
+                'song_id': '${d['song_id']}',
+                'playlist_id' : widget.playlist.id
+              };
+              DeleteFromPl(context2, data);
+            }
+          ),
+        ],
+      )
     );
   }
 
